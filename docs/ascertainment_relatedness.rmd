@@ -5,15 +5,7 @@ author: "Gibran Hemani"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
-## Summary
-
-- Developed an 'ascertainment factor' that is on a scale of 0% (completely random) to 100% (sibpairs only)
-- UK Biobank's ascertainment for sibpairs appears relatively modest compared to random sampling (i.e. an observed 40% increase in number of sibpairs compared to chance is due to only 10% ascertainment for familial relationships)
-- As sample size increases, ascertainment has less of an impact
-- Increasing the age range improves the imapct of ascertainment
-- UK Biobank-level ascertainment for 5 million samples would give 10% increase in the number of sibpairs
-- To achieve 100% increase in sib pairs (from 0.5 million to 1 million) would require approximately 30% ascertainment
-- In a sibpair-only recruitment strategy for 5 million samples we would increase number of sibpairs from 0.5 million (random) to 6 million sibpairs (siblings-only design)
+Source: https://github.com/MRCIEU/family-perspective/blob/main/docs/ascertainment_relatedness.rmd
 
 ## Background
 
@@ -30,7 +22,25 @@ Questions:
 1. Does 20k sib pairs in UK Biobank represent ascertainment for relatedness?
 2. How important is ascertainment as sample size tends towards population size?
 
-## 1. Does 20k sib pairs represent ascertainment for relatedness?
+## Summary
+
+- Developed an 'ascertainment factor' that is on a scale of 0% (completely random) to 100% (sibpairs only)
+- UK Biobank's ascertainment for sibpairs appears relatively modest compared to random sampling (i.e. an observed 40% increase in number of sibpairs compared to chance is due to only 10% ascertainment for familial relationships)
+- As sample size increases, ascertainment has less of an impact
+- Increasing the age range improves the impact of ascertainment
+- UK Biobank-level ascertainment for 5 million samples would give 10% increase in the number of sibpairs
+- To achieve 100% increase in sib pairs (from 0.5 million to 1 million) would require approximately 30% ascertainment
+- In a sibpair-only recruitment strategy for 5 million samples we would increase number of sibpairs from 0.5 million (random) to 6 million sibpairs (siblings-only design)
+
+Further questions:
+
+- Translate this into difference in GWAS power - seems like it would be negligible
+- Translate this into precision of indirect effect estimates
+- What are the real-world practicalities of trying to ascertain siblings?
+
+## Analysis
+
+### 1. Does 20k sib pairs represent ascertainment for relatedness?
 
 ```{r}
 library(dplyr)
@@ -109,13 +119,13 @@ Alternatively could look at increasing mean number of children per family
 
 ```{r}
 param <- expand.grid(familysize=seq(2,4,by=0.2), nsibpairs=NA)
-param$nsibpairs <- sapply(param$familysize, function(familysize) sample_simulation_with_ascertainment(popsize, familysize, samplesize, 1, 1))
+param$nsibpairs <- sapply(param$familysize, function(familysize) sample_simulation(popsize, familysize, samplesize, 1))
 param
 ```
 
 If the mean number of children is 3.4 then you'd get 20k sibs without any ascertainment.
 
-### Ascertainment
+#### Ascertainment
 
 If 2.4 children is correct then what is the ascertainment factor for UK Biobank? Here the scale is from totally random sampling (`random_factor=1`), to sibpair-only sampling (`random_factor=0`). 
 
@@ -161,7 +171,7 @@ sample_simulation_with_randomisation(popsize, familysize, samplesize, seq(0, 1, 
 
 Could be explained by 10% ascertainment, or 90% random sampling (on a scale of random sampling to sibling-only sampling)
 
-## 2. How important is ascertainment as sample size tends towards population size?
+### 2. How important is ascertainment as sample size tends towards population size?
 
 How important is ascertainment of sibpairs, as sample size increases?
 
@@ -201,7 +211,7 @@ params %>%
     labs(x="Sample size", y="Relative increase in sib pairs by ascertainment")
 ```
 
-### Our Future Health
+#### Our Future Health
 
 The OFH study recruits 18+ individuals, so the population size is actually more like 55 million.
 
