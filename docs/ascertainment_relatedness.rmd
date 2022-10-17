@@ -1,0 +1,364 @@
+---
+title: "Ascertainment for relatedness"
+output: html_notebook
+author: "Gibran Hemani"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+## Summary
+
+- Developed an 'ascertainment factor' that is on a scale of 0% (completely random) to 100% (sibpairs only)
+- UK Biobank's ascertainment for sibpairs appears relatively modest compared to random sampling (i.e. an observed 40% increase in number of sibpairs compared to chance is due to only 10% ascertainment for familial relationships)
+- As sample size increases, ascertainment has less of an impact
+- Increasing the age range improves the imapct of ascertainment
+- UK Biobank-level ascertainment for 5 million samples would give 10% increase in the number of sibpairs
+- To achieve 100% increase in sib pairs (from 0.5 million to 1 million) would require approximately 30% ascertainment
+- In a sibpair-only recruitment strategy for 5 million samples we would increase number of sibpairs from 0.5 million (random) to 6 million sibpairs (siblings-only design)
+
+## Background
+
+There are ~20k sibling pairs in a sample of 500k individuals in the UK Biobank. UK Biobank is known to be highly ascertained for socioeconomic factors (only 5% response rate from 9 million invitations to participate https://academic.oup.com/ije/article/47/1/226/4259077). Is 20k siblings indicative of an over-representation of relatedness also?
+
+Assume:
+
+- 21 million individuals aged 40-69 (https://www.statista.com/statistics/281208/population-of-the-england-by-age-group/)
+- All a single generation, with 2.4 children per family (UKB participants born 1940-1970, fertility rate: https://www.statista.com/statistics/1033074/fertility-rate-uk-1800-2020/, also https://en.wikipedia.org/wiki/2point4_Children)
+- Number of children per family is Poissonly distributed
+
+Questions:
+
+1. Does 20k sib pairs in UK Biobank represent ascertainment for relatedness?
+2. How important is ascertainment as sample size tends towards population size?
+
+## 1. Does 20k sib pairs represent ascertainment for relatedness?
+
+```{r}
+library(dplyr)
+library(ggplot2)
+set.seed(12345)
+
+# Population size
+popsize <- 21000000
+
+# Mean family size
+familysize <- 2.4
+
+# Number of families
+nfam <- popsize / familysize
+
+# Sampled number of children per family
+nchildren <- rpois(n=nfam, lambda=familysize)
+
+table(nchildren)
+```
+
+Create families
+
+```{r}
+id <- tibble(
+  famid = rep(1:nfam, nchildren),
+  iid = 1:length(famid)
+)
+```
+
+How many sibling pairs in the UK (age range 40-69)
+
+```{r}
+nsib <- tibble(
+  famid = 1:nfam,
+  nsibpair = nchildren * (nchildren-1)/2
+)
+sum(nsib$nsibpair)
+```
+
+If we were to sample 500k randomly from the total population, how many sib pairs would we expect?
+
+```{r}
+id_sample <- id[sample(1:nrow(id), 500000, replace=FALSE), ]
+tab <- table(id_sample$famid)
+n <- tab * (tab-1)/2
+sum(n)
+```
+
+Is this substantially different from 20k?
+
+```{r}
+sample_simulation <- function(popsize, familysize, samplesize, nsim)
+{
+  nfam <- popsize / familysize
+  nchildren <- rpois(n=nfam, lambda=familysize)
+  id <- tibble(
+    famid = rep(1:nfam, nchildren),
+    iid = 1:length(famid)
+  )
+  sapply(1:nsim, function(i)
+  {
+    id_sample <- id[sample(1:nrow(id), 500000, replace=FALSE), ]
+    tab <- table(id_sample$famid)
+    n <- tab * (tab-1)/2
+    sum(n)
+  }) %>% return()
+}
+
+sample_simulation(popsize, familysize, samplesize, 10)
+```
+
+Looks pretty tight, suggests sib pairs are substantially overrepresented.
+
+Alternatively could look at increasing mean number of children per family
+
+```{r}
+param <- expand.grid(familysize=seq(2,4,by=0.2), nsibpairs=NA)
+param$nsibpairs <- sapply(param$familysize, function(familysize) sample_simulation_with_ascertainment(popsize, familysize, samplesize, 1, 1))
+param
+```
+
+If the mean number of children is 3.4 then you'd get 20k sibs without any ascertainment.
+
+### Ascertainment
+
+If 2.4 children is correct then what is the ascertainment factor for UK Biobank? Here the scale is from totally random sampling (`random_factor=1`), to sibpair-only sampling (`random_factor=0`). 
+
+1. Order individuals by family (for maximum ascertainment order families by family size, though this is slightly artificial so will be ignored)
+2. In complete sib ascertainment just take the first `samplesize` individuals
+3. In complete randomness, randomise all IDs and then take the first `samplesize` individuals
+4. For something in between, choose a fraction of IDs to randomise and then take the first `samplesize` individuals
+
+```{r}
+sample_simulation_with_randomisation <- function(popsize, familysize, samplesize, random_factor, maximisesibs=FALSE)
+{
+  nfam <- popsize / familysize
+  nchildren <- rpois(n=nfam, lambda=familysize)
+  id <- tibble(
+    famid = rep(1:nfam, nchildren),
+    iid = 1:length(famid)
+  )
+  sibcount <- tibble(
+    famid = 1:nfam,
+    n = nchildren
+  ) %>% arrange(desc(n)) %>%
+    mutate(newfamid = 1:n())
+  id <- left_join(id, sibcount, by="famid") %>% mutate(has_sib = as.numeric(n > 1))
+  if(maximisesibs)
+  {
+    id <- id %>% arrange(newfamid)
+  } else {
+    id <- id %>% arrange(famid)
+  }
+  sapply(random_factor, function(rf)
+  {
+    # Shuffle
+    shufids <- sample(1:nrow(id), nrow(id) * rf, replace=FALSE)
+    id[shufids,] <- id[sample(shufids),]
+    id_sample <- id[1:samplesize,]
+    tab <- table(id_sample$famid)
+    n <- tab * (tab-1)/2
+    sum(n)
+  }) %>% return()
+}
+sample_simulation_with_randomisation(popsize, familysize, samplesize, seq(0, 1, by=0.1), FALSE)
+```
+
+Could be explained by 10% ascertainment, or 90% random sampling (on a scale of random sampling to sibling-only sampling)
+
+## 2. How important is ascertainment as sample size tends towards population size?
+
+How important is ascertainment of sibpairs, as sample size increases?
+
+```{r}
+params <- expand.grid(
+  popsize = popsize,
+  familysize = familysize,
+  random_factor = seq(0, 1, by=0.1),
+  samplesize = seq(500000, 5000000, by=500000),
+  nsibs = NA
+)
+dim(params)
+params$nsibs <- sapply(seq(500000, 5000000, by=500000), function(n)
+  {
+    sample_simulation_with_randomisation(popsize, familysize, n, seq(0, 1, by=0.1), FALSE)
+}) %>% c
+```
+
+
+
+```{r}
+ggplot(params, aes(x=samplesize, y=nsibs, groups=as.factor(random_factor), colour=random_factor)) +
+  geom_point() +
+  geom_line() +
+  labs(x="Sample size", y="Number of sib pairs")
+```
+
+```{r}
+params %>%
+  #filter(random_factor >= 0.5) %>%
+  arrange(desc(random_factor)) %>% 
+  group_by(samplesize) %>%
+  mutate(nsibs = nsibs / nsibs[1]) %>%
+  ggplot(., aes(x=samplesize, y=nsibs, groups=as.factor(random_factor), colour=random_factor)) +
+    geom_point() +
+    geom_line() +
+    labs(x="Sample size", y="Relative increase in sib pairs by ascertainment")
+```
+
+### Our Future Health
+
+The OFH study recruits 18+ individuals, so the population size is actually more like 55 million.
+
+```{r}
+paramsofh <- expand.grid(
+  popsize = 55000000,
+  familysize = familysize,
+  random_factor = seq(0, 1, by=0.1),
+  samplesize = seq(500000, 5000000, by=500000),
+  nsibs = NA
+)
+dim(params)
+paramsofh$nsibs <- sapply(seq(500000, 5000000, by=500000), function(n)
+  {
+    sample_simulation_with_randomisation(55000000, familysize, n, seq(0, 1, by=0.1), FALSE)
+}) %>% c
+```
+
+
+```{r}
+ggplot(paramsofh, aes(x=samplesize, y=nsibs, groups=as.factor(random_factor), colour=random_factor)) +
+  geom_point() +
+  geom_line() +
+  labs(x="Sample size", y="Number of sib pairs")
+```
+
+```{r}
+paramsofh %>%
+  filter(random_factor >= 0.6) %>%
+  arrange(desc(random_factor)) %>% 
+  group_by(samplesize) %>%
+  mutate(nsibs = nsibs / nsibs[1]) %>%
+  ggplot(., aes(x=samplesize, y=nsibs, groups=as.factor(random_factor), colour=random_factor)) +
+    geom_point() +
+    geom_line() +
+    labs(x="Sample size", y="Relative increase in sib pairs by ascertainment")
+```
+
+```{r}
+paramsofh
+```
+
+
+
+## Alternative method for ascertainment - LEGACY - IGNORE
+
+Define ascertaiment factor as the number of complete families in the sample more than expected by chance. Let's simulate this to see how many more sibling pairs are obtained when ascertaining. Some fraction of families are selected, in which all children are sampled. All remaining individuals come from random sampling.
+
+```{r}
+ascertained_sample_family <- function(id, sibcount, familysize, samplesize, ascertainment_factor)
+{
+  stopifnot(ascertainment_factor >= 1)
+  # How many families contribute all kids, by chance?
+  id_sample <- id[sample(1:nrow(id), 500000, replace=FALSE), ]
+  completefams <- id_sample %>% group_by(famid) %>% summarise(n=n()) %>% inner_join(., sibcount, by="famid") %>% filter(n.x == n.y & n.x > 1)
+  ncompletefams <- nrow(completefams)
+
+  # To ascertain for more sibs choose a higher number of complete families
+  selected_famids <- completefams$famid
+  nfams <- ncompletefams * ascertainment_factor
+  remfams <- nfams - ncompletefams
+  if(ascertainment_factor > 1)
+  {
+    selected_famids <- completefams$famid[1:min(nfams, ncompletefams)]
+    selected_famids <- c(selected_famids, sample(subset(sibcount, n > 1 & ! famid %in% selected_famids)$famid, remfams, replace=FALSE)) %>% unique()
+  }
+
+  if(length(selected_famids) > 0)
+  {
+    selected_ids <- id %>% filter(famid %in% selected_famids)
+    selected_ids <- selected_ids[1:min(samplesize, nrow(selected_ids)),]
+  } else {
+    selected_ids <- id[sample(1:nrow(id), samplesize, replace=FALSE), ]
+  }
+  nremaining <- samplesize - nrow(selected_ids)
+  if(nremaining > 0)
+  {
+    newids <- sample(id$iid[!id$iid %in% selected_ids$iid], nremaining, replace=FALSE)
+    selected_ids <- bind_rows(
+      selected_ids,
+      subset(id, iid %in% newids)
+    )
+  }
+  tibble(
+    ncompletefams, nfams, length(selected_famids), remfams, nremaining, length(newids), nrow(selected_ids)
+  ) %>% as.list() %>% print()
+  return(selected_ids)
+}
+
+sample_simulation_with_ascertainment <- function(popsize, familysize, samplesize, nsim, ascertainment_factor)
+{
+  nfam <- popsize / familysize
+  nchildren <- rpois(n=nfam, lambda=familysize)
+  id <- tibble(
+    famid = rep(1:nfam, nchildren),
+    iid = 1:length(famid)
+  )
+  sibcount <- tibble(
+    famid = 1:nfam,
+    n = nchildren
+  )
+  sapply(1:nsim, function(i)
+  {
+    id_sample <- ascertained_sample_family(id, sibcount, familysize, samplesize, ascertainment_factor)
+    tab <- table(id_sample$famid)
+    n <- tab * (tab-1)/2
+    sum(n)
+  }) %>% return()
+}
+
+sample_simulation_with_ascertainment(popsize, familysize, samplesize, 1, 10)
+sample_simulation_with_ascertainment(popsize, familysize, samplesize, 1, 1)
+
+# sapply(seq(0,0.1, by=0.01), function(ascertainment_factor) sample_simulation_with_ascertainment(popsize, familysize, samplesize, 1, ascertainment_factor))
+```
+
+Try a range of ascertainment factors - which gives 20k sibling pairs?
+
+```{r}
+param <- expand.grid(ascertainment_factor=1:10, nsibpairs=NA)
+param$nsibpairs <- sapply(param$ascertainment_factor, function(ascertainment_factor) sample_simulation_with_ascertainment(popsize, familysize, samplesize, 1, ascertainment_factor))
+param
+```
+
+Ascertainment factor for UK Biobank is roughly 2x more complete families than expected by chance.
+
+```{r}
+params <- expand.grid(
+  popsize = popsize,
+  familysize = familysize,
+  samplesize = seq(500000, 5000000, by=500000),
+  ascertainment_factor = c(1, 5, 10),
+  nsibs = NA
+)
+params$nsibpairs <- sapply(1:nrow(params), function(i)
+  {
+    sample_simulation_with_ascertainment(params$popsize[i], params$familysize[i], params$samplesize[i], 1, params$ascertainment_factor[i])
+})
+```
+
+
+
+```{r}
+# Taken from https://stackoverflow.com/a/15205104 due to sample(prob) being far too slow
+weighted_Random_Sample <- function(.data, .weights, .n)
+{
+  key <- runif(length(.data)) ^ (1 / .weights)
+  return(.data[order(key, decreasing=TRUE)][1:.n])
+}
+
+o <- weighted_Random_Sample(id$iid, id$n^20, samplesize)
+mean(id$n)
+mean(id$n[o])
+```
+
+```{r}
+ggplot(params, aes(x=samplesize, y=nsibpairs)) +
+  geom_point(aes(colour=as.factor(ascertainment_factor))) +
+  geom_line(aes(colour=as.factor(ascertainment_factor)))
+```
