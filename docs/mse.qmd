@@ -1,0 +1,282 @@
+---
+title: Using mean squared error vs hypothesis testing
+author: Gibran Hemani
+date: "`r Sys.Date()`"
+---
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(simulateGP)
+library(tidyr)
+```
+
+Functions from Alex for relative sample size between designs:
+
+```{r}
+unrel_vs_sib = function(h2){
+  return(1+h2*(1-h2)/(4-h2))
+}
+
+unrel_vs_sib_inv = function(h2){
+  return((1+h2*(1-h2)/(4-h2))^(-1))
+}
+
+unrel_vs_trio = function(h2){
+  return(1+h2*(1-h2)/(3-h2*(1+h2/2)))
+}
+
+unrel_vs_trio_inv = function(h2){
+  return((1+h2*(1-h2)/(3-h2*(1+h2/2)))^(-1))
+}
+
+unrel_vs_direct_trio = function(h2){return(0.5/3)}
+
+unrel_vs_direct_sibdiff = function(h2){return((2*(2-h2))^(-1))}
+
+unrel_vs_direct_sibimp = function(h2){return((2+h2/2)/(6*(1-(h2/2)^2)))}
+```
+
+Get expected standard error in regression
+
+```{r}
+expected_se <- function (beta, af, n, vy) 
+{
+    sqrt(c(vy) - beta^2 * 2 * af * (1 - af))/sqrt(c(n)) * (1/sqrt(2 * 
+        af * (1 - af)))
+}
+```
+
+
+Mean squared error of an estimator is a combination of bias and precision:
+
+$$
+\begin{aligned}
+MSE & = E((\hat\theta - \theta^2)) \\
+&= Var(\hat{\theta}) + (E(\hat\theta) - \theta)^2
+\end{aligned}
+$$
+
+Expect that the bias of population estimates will be a constant, bias of a sibling estimate is 0, but the precision will increase as sample size increases.
+
+```{r}
+#' Simulate MSE for sibling and population estimators
+#'
+#' @param N Sample size
+#' @param h2 Trait heritability
+#' @param prop_d Proportion of the population effect that is due to bias (0 = all direct effect, 1 = all indirect effect)
+#' @param af Allele frequency of SNP
+#' @param b Population effect of SNP
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sim <- function(N, h2, prop_d, af, b)
+{
+  args <- environment() %>% as.list()
+  b_d <- b*prop_d
+  b_i <- b*(1-prop_d)
+  se_sibimp <- expected_se(b_d, af, N * unrel_vs_direct_sibimp(h2), 1)
+  se_pop <- expected_se(b, af, N, 1)
+  res <- tibble(
+      estimate=c("pop", "sibimp"),
+      bias = c(b_d-b, 0),
+      se = c(se_pop, se_sibimp),
+      mse = c(se^2 + bias^2)
+    )
+  res %>% bind_cols(
+    ., args
+  )
+}
+out <- sim(10000, 0.4, 0.2, 0.4, 0.01)
+out
+```
+
+Run across a range of parameters
+
+```{r}
+param <- expand.grid(
+  N = seq(50000, 5000000, by=50000),
+  af = 0.3,
+  h2 = seq(0.1, 0.9, by=0.1),
+  prop_d = seq(0, 1, by=0.1),
+  b = c(0.001, 0.01, 0.1)
+)
+res <- lapply(1:nrow(param), function(i) do.call(sim, param[i,])) %>% bind_rows()
+filter(res, b %in% c(0.001, 0.01), h2 == 0.1, prop_d %in% c(0, 0.5, 1), N > 1000000) %>%
+    ggplot(., aes(x=N, y=mse)) +
+  geom_point(aes(colour=estimate)) +
+  geom_line(aes(colour=estimate)) +
+  facet_grid(b ~ prop_d, scale="free_y", labeller = label_both)
+```
+
+Interpretation - 
+
+- As sample size increases the MSE reduces for pop and sib
+- When there is no bias, MSE is always higher in pop
+- When there is only bias, sample size needs to be very large or effect needs to be large before sib gives lower MSE
+
+Overall this is a bit arbitrary, approach slightly differently. For a likely genetic architecture, and for some genome-wide inflation of estimates, 
+
+- how does average MSE change as sample size increases?
+- 
+
+
+## Integrate genetic architecture
+
+```{r}
+nsnp <- 10000
+map <- tibble(snp=1:nsnp, af=runif(nsnp, 0.01, 0.99))
+params <- generate_gwas_params(map=map, h2=0.4, S=-0.4, Pi=1)
+params
+sim2 <- function(params, N, h2, prop_d)
+{
+    params %>% mutate(
+      beta_pop = beta / prop_d,
+      se_pop = expected_se(beta_pop, af, N, 1),
+      se_sibimp = expected_se(beta, af, N * unrel_vs_direct_sibimp(h2), 1),
+      mse_pop = se_pop^2 + (beta_pop - beta)^2,
+      mse_sibimp = se_sibimp^2,
+      rsq = 2*af*(1-af)*beta^2
+    )
+}
+o <- sim2(params, 100000, 0.4, 0.4)
+```
+
+```{r}
+o %>% select(mse_pop, mse_sibimp, rsq) %>%
+  gather(key="method", value="mse", mse_pop, mse_sibimp) %>%
+  ggplot(., aes(x=rsq, y=mse)) +
+  geom_point(aes(colour=method))
+
+```
+
+```{r}
+sim2 <- function(params, N, h2, prop_d)
+{
+  args <- environment() %>% as.list() %>% {.[-1]}
+  params %>% mutate(
+    beta_pop = beta / prop_d,
+    se_pop = expected_se(beta_pop, af, N, 1),
+    se_sibimp = expected_se(beta, af, N * unrel_vs_direct_sibimp(h2), 1),
+    mse_pop = se_pop^2 + (beta_pop - beta)^2,
+    mse_sibimp = se_sibimp^2,
+    rsq = 2*af*(1-af)*beta^2,
+    mse_diff = mse_sibimp < mse_pop
+  ) %>% 
+    group_by(mse_diff) %>%
+    summarise(
+      rsq = sum(rsq),
+      n=n()
+    ) %>%
+    bind_cols(., args)
+}
+param <- expand.grid(
+  n = seq(100000, 5000000, 100000),
+  prop_d = c(0.1, 0.5, 0.9)
+)
+sim2(params, 100000, 0.4, 0.1)
+res2 <- lapply(1:nrow(param), function(i) sim2(params, param$n[i], 0.4, param$prop_d[i])) %>% bind_rows()
+```
+
+```{r}
+res2 %>%
+  ggplot(., aes(x=N, y=n)) +
+  geom_point(aes(colour=mse_diff, shape=as.factor(prop_d))) +
+  facet_wrap(~ prop_d, scale="free", nrow=3)
+```
+
+
+
+
+```{r}
+gwas_power <- function(beta, se, alpha)
+{
+  pnorm(qnorm(alpha, lower.tail=FALSE) - abs(beta)/se, lower.tail=FALSE)
+}
+
+sim3 <- function(params, N, h2, prop_d)
+{
+  args <- environment() %>% as.list() %>% {.[-1]}
+  params %>% mutate(
+    beta_pop = beta / prop_d,
+    se_pop = expected_se(beta_pop, af, N, 1),
+    se_sibimp = expected_se(beta, af, N * unrel_vs_direct_sibimp(h2), 1),
+    mse_pop = se_pop^2 + (beta_pop - beta)^2,
+    mse_sibimp = se_sibimp^2,
+    mse_ratio = mse_sibimp / mse_pop,
+    rsq = 2*af*(1-af)*beta^2,
+    rsq_bin = cut(rsq, 5),
+    pow_sibimp = gwas_power(beta, se_sibimp, 5e-8),
+    pow_pop = gwas_power(beta_pop, se_pop, 5e-8)
+  ) %>%
+    group_by(rsq_bin) %>%
+    summarise(
+      n=n(),
+      mse_ratio = mean(mse_ratio),
+      pow_sibimp = sum(pow_sibimp),
+      pow_pop = sum(pow_pop),
+      pow_ratio = sum(pow_sibimp) / sum(pow_pop)
+    ) %>%
+    bind_cols(., args)
+}
+param <- expand.grid(
+  n = seq(100000, 5000000, 100000),
+  prop_d = seq(0.5, 1, by=0.1)
+)
+o <- sim3(params, 100000, 0.4, 1)
+res3 <- lapply(1:nrow(param), function(i) sim3(params, param$n[i], 0.4, param$prop_d[i])) %>% bind_rows()
+res3
+```
+
+```{r}
+res3 %>%
+  ggplot(., aes(x=N, y=rsq_bin)) +
+  geom_tile(aes(fill=mse_ratio>1)) +
+  facet_grid(prop_d ~ .)
+```
+
+```{r}
+res3 %>%
+  ggplot(., aes(x=N, y=rsq_bin)) +
+  geom_tile(aes(fill=pow_ratio))
+```
+
+
+```{r}
+res3 %>%
+  ggplot(., aes(x=pow_ratio, y=1/mse_ratio)) +
+  geom_line(aes(colour=as.factor(prop_d))) +
+  facet_grid(rsq_bin ~ ., scale="free_y") +
+  scale_x_log10() + scale_y_log10() +
+  geom_hline(yintercept=1, linetype="dotted") + geom_vline(xintercept=1, linetype="dotted") +
+  scale_colour_brewer() + labs(x="Power ratio, higher = better sib", y="MSE ratio, higher = better sib", colour="Proportion of population\nestimate that is the\ndirect effect")
+```
+
+```{r}
+res3 %>%
+  ggplot(., aes(x=N, y=1/mse_ratio)) +
+  geom_line(aes(colour=as.factor(prop_d))) +
+  facet_grid(rsq_bin ~ ., scale="free_y") +
+  scale_x_log10() + scale_y_log10() +
+  geom_hline(yintercept=1, linetype="dotted")  +
+  scale_colour_brewer()
+```
+
+```{r}
+res3 %>%
+  ggplot(., aes(x=N, y=pow_ratio)) +
+  geom_line(aes(colour=as.factor(prop_d))) +
+  facet_grid(rsq_bin ~ ., scale="free_y") +
+  scale_x_log10() + scale_y_log10() +
+  geom_hline(yintercept=1, linetype="dotted")  +
+  scale_colour_brewer()
+
+```
+
+
+Summary
+
+- For large effects, there isn't a huge hit on power using sibs, but the MSE could be drastically improved by using sibs.
+- For the smallest effects, there needs to be substantial bias in order for the sib MSE to be lower than the population MSE.
