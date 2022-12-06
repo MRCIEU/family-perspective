@@ -484,18 +484,3 @@ idfam$nsibpair <- idfam$n * (idfam$n-1) / 2
 sum(idfam$nsibpair)
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
