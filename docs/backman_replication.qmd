@@ -1,6 +1,8 @@
 ---
 title: "Sibling replication of Backman rare variants"
-format: html
+format:
+  html:
+    self-contained: true
 editor: visual
 ---
 

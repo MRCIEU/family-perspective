@@ -247,9 +247,10 @@ res3 %>%
 ```{r}
 res3 %>%
   ggplot(., aes(x=pow_ratio, y=1/mse_ratio)) +
-  geom_line(aes(colour=as.factor(prop_d))) +
-  facet_grid(rsq_bin ~ ., scale="free_y") +
+  geom_line(aes(colour=as.factor(rsq_bin))) +
+  facet_grid(prop_d ~ ., scale="free_y") +
   scale_x_log10() + scale_y_log10() +
+  geom_abline(slope=1) +
   geom_hline(yintercept=1, linetype="dotted") + geom_vline(xintercept=1, linetype="dotted") +
   scale_colour_brewer() + labs(x="Power ratio, higher = better sib", y="MSE ratio, higher = better sib", colour="Proportion of population\nestimate that is the\ndirect effect")
 ```
@@ -258,10 +259,12 @@ res3 %>%
 res3 %>%
   ggplot(., aes(x=N, y=1/mse_ratio)) +
   geom_line(aes(colour=as.factor(prop_d))) +
-  facet_grid(rsq_bin ~ ., scale="free_y") +
+  facet_grid(rsq_bin ~ .) +
   scale_x_log10() + scale_y_log10() +
   geom_hline(yintercept=1, linetype="dotted")  +
-  scale_colour_brewer()
+  scale_colour_brewer() +
+  labs(y="MSE ratio, higher = better sib estimate", x = "Sample size", colour="Fraction of pop\nestimate due to bias")
+  
 ```
 
 ```{r}
@@ -280,3 +283,80 @@ Summary
 
 - For large effects, there isn't a huge hit on power using sibs, but the MSE could be drastically improved by using sibs.
 - For the smallest effects, there needs to be substantial bias in order for the sib MSE to be lower than the population MSE.
+
+
+## PRS
+
+What happens for PRS which are a mixture of large and small effects?
+
+```{r}
+sample_simulation_with_randomisation <- function(popsize, familysize, samplesize, random_factor, maximisesibs=FALSE)
+{
+  nfam <- popsize / familysize
+  nchildren <- rpois(n=nfam, lambda=familysize)
+  id <- tibble(
+    famid = rep(1:nfam, nchildren),
+    iid = 1:length(famid)
+  )
+  sibcount <- tibble(
+    famid = 1:nfam,
+    n = nchildren
+  ) %>% arrange(desc(n)) %>%
+    mutate(newfamid = 1:n())
+  id <- left_join(id, sibcount, by="famid") %>% mutate(has_sib = as.numeric(n > 1))
+  if(maximisesibs)
+  {
+    id <- id %>% arrange(newfamid)
+  } else {
+    id <- id %>% arrange(famid)
+  }
+  sapply(random_factor, function(rf)
+  {
+    # Shuffle
+    shufids <- sample(1:nrow(id), nrow(id) * rf, replace=FALSE)
+    id[shufids,] <- id[sample(shufids),]
+    id_sample <- id[1:samplesize,]
+    tab <- table(id_sample$famid)
+    n <- tab * (tab-1)/2
+    sum(n)
+  }) %>% return()
+}
+
+nsnp <- 20000
+h2 <- 0.5
+map <- tibble(snp=1:nsnp, af=runif(nsnp, 0.01, 0.99))
+params <- generate_gwas_params(map=map, h2=h2, S=0, Pi=1)
+N <- 5000000
+
+nsibpair <- sample_simulation_with_randomisation(55000000, 2.4, N, seq(0, 1, by=0.1), FALSE)
+ns <- tibble(ascertainment=seq(1, 0, by=-0.1), nsibpair=nsibpair)
+simparam <- expand.grid(
+  bias_factor = seq(1,2,by=0.2),
+  nsibpair = nsibpair
+)
+simparam <- inner_join(simparam, ns)
+
+simparam$mse_sib_better <- sapply(1:nrow(simparam), function(i)
+{
+  disc <- params %>% mutate(
+    beta_pop = beta * simparam$bias_factor[i],
+    se_pop = expected_se(beta_pop, af, N, 1),
+    se_sibimp = expected_se(beta, af, simparam$nsibpair[i] * unrel_vs_direct_sibimp(h2), 1),
+    mse_pop = se_pop^2 + (beta_pop - beta)^2,
+    mse_sibimp = se_sibimp^2,
+    mse_ratio = mse_sibimp / mse_pop,
+  )
+  sum(disc$mse_pop > disc$mse_sibimp) / nrow(disc)
+})
+simparam %>% 
+  ggplot(., aes(x=ascertainment, y=mse_sib_better)) +
+  geom_point(aes(colour=as.factor(bias_factor))) +
+  geom_line(aes(colour=as.factor(bias_factor))) +
+  scale_colour_brewer() +
+  labs(colour="Bias factor", y="P(sibling MSE < population MSE)", x="Ascertainment of siblings in sampling strategy") +
+  theme_bw()
+```
+
+
+
+

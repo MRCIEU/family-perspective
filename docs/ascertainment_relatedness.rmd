@@ -50,6 +50,9 @@ set.seed(12345)
 # Population size
 popsize <- 21000000
 
+# Sample size
+samplesize <- 500000
+
 # Mean family size
 familysize <- 2.4
 
@@ -220,15 +223,27 @@ paramsofh <- expand.grid(
   popsize = 55000000,
   familysize = familysize,
   random_factor = seq(0, 1, by=0.1),
-  samplesize = seq(500000, 5000000, by=500000),
+  samplesize = 5000000,
   nsibs = NA
 )
-dim(params)
-paramsofh$nsibs <- sapply(seq(500000, 5000000, by=500000), function(n)
-  {
-    sample_simulation_with_randomisation(55000000, familysize, n, seq(0, 1, by=0.1), FALSE)
-}) %>% c
+dim(paramsofh)
+
+a <- sample_simulation_with_randomisation(55000000, 2.4, 5000000, seq(0, 1, by=0.05), FALSE)
+
+tibble(fa=1-seq(0, 1, by=0.05), nsib=a/1000000) %>%
+ggplot(., aes(x=fa, y=nsib)) +
+  geom_point() +
+  geom_line() +
+  scale_x_continuous(breaks=seq(0,1,by=0.05)) +
+  scale_y_continuous(breaks=seq(0,max(a/1000000),by=1), limits=c(0, max(a/1000000))) +
+#  ylim(0, max(a/1000000)) +
+  labs(y="Number of sibling pairs (millions)", x="Family ascertainment factor")
 ```
+```{r}
+rev(a)[3]/rev(a)[1]
+```
+
+
 
 
 ```{r}
