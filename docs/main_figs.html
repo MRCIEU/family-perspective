@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Matt Keller">
+
+<title>Main figures for future of biobanks paper</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="main_figs_files/libs/clipboard/clipboard.min.js"></script>
+<script src="main_figs_files/libs/quarto-html/quarto.js"></script>
+<script src="main_figs_files/libs/quarto-html/popper.min.js"></script>
+<script src="main_figs_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="main_figs_files/libs/quarto-html/anchor.min.js"></script>
+<link href="main_figs_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="main_figs_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="main_figs_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="main_figs_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="main_figs_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Main figures for future of biobanks paper</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Matt Keller </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>here() starts at /Users/gh13047/repo/family-perspective</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">######### Simulation functions ############</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># simulate_phenotype = function(h2,nfam){</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   sigma = rbind(c(1,h2/2,h2/2,h2/2),</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#                 c(h2/2,1,h2/2,h2/2),</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#                 c(h2/2,h2/2,1,0),</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#                 c(h2/2,h2/2,0,1))</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#   y = mvrnorm(n=nfam,mu=rep(0,4),Sigma=sigma)</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#   dimnames(y)[[2]] = c('sib1','sib2','father','mother')</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#   return(y)</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># }</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>simulate_parents <span class="ot">=</span> <span class="cf">function</span>(f,nfam){</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  father <span class="ot">=</span> <span class="fu">matrix</span>(<span class="fu">rbinom</span>(nfam<span class="sc">*</span><span class="dv">2</span>,<span class="dv">1</span>,f),<span class="at">nrow=</span>nfam,<span class="at">ncol=</span><span class="dv">2</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  mother <span class="ot">=</span> <span class="fu">matrix</span>(<span class="fu">rbinom</span>(nfam<span class="sc">*</span><span class="dv">2</span>,<span class="dv">1</span>,f),<span class="at">nrow=</span>nfam,<span class="at">ncol=</span><span class="dv">2</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">father=</span>father,<span class="at">mother=</span>mother))</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>simulate_meiosis <span class="ot">=</span> <span class="cf">function</span>(parents){</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  nfam <span class="ot">=</span> <span class="fu">dim</span>(parents<span class="sc">$</span>father)[<span class="dv">1</span>]</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  sibs <span class="ot">=</span> <span class="fu">matrix</span>(<span class="cn">NA</span>,<span class="at">nrow=</span>nfam,<span class="at">ncol=</span><span class="dv">2</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>){</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Paternal allele</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    pat_seg <span class="ot">=</span> <span class="fu">rbinom</span>(nfam,<span class="dv">1</span>,<span class="fl">0.5</span>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    sibs[pat_seg<span class="sc">==</span><span class="dv">0</span>,i] <span class="ot">=</span> parents<span class="sc">$</span>father[pat_seg<span class="sc">==</span><span class="dv">0</span>,<span class="dv">1</span>]</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    sibs[pat_seg<span class="sc">==</span><span class="dv">1</span>,i] <span class="ot">=</span> parents<span class="sc">$</span>father[pat_seg<span class="sc">==</span><span class="dv">1</span>,<span class="dv">2</span>]</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Maternal allele</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    mat_seg <span class="ot">=</span> <span class="fu">rbinom</span>(nfam,<span class="dv">1</span>,<span class="fl">0.5</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    sibs[mat_seg<span class="sc">==</span><span class="dv">0</span>,i] <span class="ot">=</span> sibs[mat_seg<span class="sc">==</span><span class="dv">0</span>,i]<span class="sc">+</span>parents<span class="sc">$</span>mother[mat_seg<span class="sc">==</span><span class="dv">0</span>,<span class="dv">1</span>]</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    sibs[mat_seg<span class="sc">==</span><span class="dv">1</span>,i] <span class="ot">=</span> sibs[mat_seg<span class="sc">==</span><span class="dv">1</span>,i]<span class="sc">+</span>parents<span class="sc">$</span>mother[mat_seg<span class="sc">==</span><span class="dv">1</span>,<span class="dv">2</span>]</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(sibs)</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>simulate_genotype <span class="ot">=</span> <span class="cf">function</span>(f,nfam){</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  parents <span class="ot">=</span> <span class="fu">simulate_parents</span>(f,nfam)</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  sibs <span class="ot">=</span> <span class="fu">simulate_meiosis</span>(parents)</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>  quad <span class="ot">=</span> <span class="fu">matrix</span>(<span class="cn">NA</span>,<span class="at">nrow=</span>nfam,<span class="at">ncol=</span><span class="dv">4</span>)</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dimnames</span>(quad)[[<span class="dv">2</span>]] <span class="ot">=</span> <span class="fu">c</span>(<span class="st">'sib1'</span>,<span class="st">'sib2'</span>,<span class="st">'father'</span>,<span class="st">'mother'</span>)</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>  quad[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>] <span class="ot">=</span> sibs</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>  quad[,<span class="dv">3</span>] <span class="ot">=</span> <span class="fu">apply</span>(parents<span class="sc">$</span>father,<span class="dv">1</span>,sum)</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>  quad[,<span class="dv">4</span>] <span class="ot">=</span> <span class="fu">apply</span>(parents<span class="sc">$</span>mother,<span class="dv">1</span>,sum)</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>  quad <span class="ot">=</span> quad<span class="dv">-2</span><span class="sc">*</span>f</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(quad)</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>unrelated_regression <span class="ot">=</span> <span class="cf">function</span>(g){</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="dv">1</span><span class="sc">/</span><span class="fu">sum</span>(g[,<span class="dv">1</span>]<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>sib_regression <span class="ot">=</span> <span class="cf">function</span>(g,h2){</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>  nfam <span class="ot">=</span> <span class="fu">dim</span>(g)[<span class="dv">1</span>]</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>  sigma <span class="ot">=</span> <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="dv">1</span>,h2<span class="sc">/</span><span class="dv">2</span>),<span class="fu">c</span>(h2<span class="sc">/</span><span class="dv">2</span>,<span class="dv">1</span>))</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>  sigma_inv <span class="ot">=</span> <span class="fu">solve</span>(sigma)</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>  xtx <span class="ot">=</span> <span class="dv">0</span> </span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nfam){</span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>    xtx <span class="ot">=</span> xtx<span class="sc">+</span><span class="fu">t</span>(g[i,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])<span class="sc">%*%</span>sigma_inv<span class="sc">%*%</span>g[i,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(xtx<span class="sc">^</span>(<span class="sc">-</span><span class="dv">1</span>))</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>trio_regression <span class="ot">=</span> <span class="cf">function</span>(g,h2){</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>  nfam <span class="ot">=</span> <span class="fu">dim</span>(g)[<span class="dv">1</span>]</span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>  sigma <span class="ot">=</span> <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="dv">1</span>,h2<span class="sc">/</span><span class="dv">2</span>,h2<span class="sc">/</span><span class="dv">2</span>),<span class="fu">c</span>(h2<span class="sc">/</span><span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>                <span class="fu">c</span>(h2<span class="sc">/</span><span class="dv">2</span>,<span class="dv">0</span>,<span class="dv">1</span>))</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>  sigma_inv <span class="ot">=</span> <span class="fu">solve</span>(sigma)</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>  xtx <span class="ot">=</span> <span class="dv">0</span> </span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nfam){</span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>    xtx <span class="ot">=</span> xtx<span class="sc">+</span><span class="fu">t</span>(g[i,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">4</span>)])<span class="sc">%*%</span>sigma_inv<span class="sc">%*%</span>g[i,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">4</span>)]</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(xtx<span class="sc">^</span>(<span class="sc">-</span><span class="dv">1</span>))</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a><span class="do">##### Effective sample size functions </span></span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>unrel_vs_sib <span class="ot">=</span> <span class="cf">function</span>(h2){</span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="dv">1</span><span class="sc">+</span>h2<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>h2)<span class="sc">/</span>(<span class="dv">4</span><span class="sc">-</span>h2))</span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>unrel_vs_sib_inv <span class="ot">=</span> <span class="cf">function</span>(h2){</span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>((<span class="dv">1</span><span class="sc">+</span>h2<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>h2)<span class="sc">/</span>(<span class="dv">4</span><span class="sc">-</span>h2))<span class="sc">^</span>(<span class="sc">-</span><span class="dv">1</span>))</span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>unrel_vs_trio <span class="ot">=</span> <span class="cf">function</span>(h2){</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="dv">1</span><span class="sc">+</span>h2<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>h2)<span class="sc">/</span>(<span class="dv">3</span><span class="sc">-</span>h2<span class="sc">*</span>(<span class="dv">1</span><span class="sc">+</span>h2<span class="sc">/</span><span class="dv">2</span>)))</span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>unrel_vs_trio_inv <span class="ot">=</span> <span class="cf">function</span>(h2){</span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>((<span class="dv">1</span><span class="sc">+</span>h2<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>h2)<span class="sc">/</span>(<span class="dv">3</span><span class="sc">-</span>h2<span class="sc">*</span>(<span class="dv">1</span><span class="sc">+</span>h2<span class="sc">/</span><span class="dv">2</span>)))<span class="sc">^</span>(<span class="sc">-</span><span class="dv">1</span>))</span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>unrel_vs_direct_trio <span class="ot">=</span> <span class="cf">function</span>(h2){<span class="fu">return</span>(<span class="fl">0.5</span><span class="sc">/</span><span class="dv">3</span>)}</span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>unrel_vs_direct_sibdiff <span class="ot">=</span> <span class="cf">function</span>(h2){<span class="fu">return</span>((<span class="dv">2</span><span class="sc">*</span>(<span class="dv">2</span><span class="sc">-</span>h2))<span class="sc">^</span>(<span class="sc">-</span><span class="dv">1</span>))}</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>unrel_vs_direct_sibimp <span class="ot">=</span> <span class="cf">function</span>(h2){<span class="fu">return</span>((<span class="dv">2</span><span class="sc">+</span>h2<span class="sc">/</span><span class="dv">2</span>)<span class="sc">/</span>(<span class="dv">6</span><span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>(h2<span class="sc">/</span><span class="dv">2</span>)<span class="sc">^</span><span class="dv">2</span>)))}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Simulation</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>h2 <span class="ot">=</span> <span class="fl">0.5</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> <span class="fl">0.5</span> <span class="co">#MAF</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>nfam <span class="ot">=</span> <span class="dv">600000</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>nsib <span class="ot">=</span> nfam<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>ntrio <span class="ot">=</span> nfam<span class="sc">/</span><span class="dv">3</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate genotypes</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>g <span class="ot">=</span> <span class="fu">simulate_genotype</span>(f,nfam)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Estimate effects</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Unrelated</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>unrelated_var <span class="ot">=</span> <span class="fu">unrelated_regression</span>(g)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Sibs</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>sib_var <span class="ot">=</span> <span class="fu">sib_regression</span>(g[<span class="dv">1</span><span class="sc">:</span>nsib,],h2)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>empirical_unrel_vs_sib <span class="ot">=</span> sib_var<span class="sc">/</span>unrelated_var</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">'Predicted relative effective sample of unrelated vs sib for population effects'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Predicted relative effective sample of unrelated vs sib for population effects"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>predicted_unrel_vs_sib <span class="ot">=</span> <span class="fu">unrel_vs_sib</span>(h2)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(predicted_unrel_vs_sib)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.071429</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">'Empirical relative effective sample of unrelated vs sib for population effects'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Empirical relative effective sample of unrelated vs sib for population effects"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(empirical_unrel_vs_sib)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         [,1]
+[1,] 1.069552</code></pre>
+</div>
+</div>
+<p>Trios</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>trio_var <span class="ot">=</span> <span class="fu">trio_regression</span>(g[<span class="dv">1</span><span class="sc">:</span>ntrio,],h2)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>empirical_unrel_vs_trio <span class="ot">=</span> trio_var<span class="sc">/</span>unrelated_var</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>predicted_unrel_vs_trio <span class="ot">=</span> <span class="fu">unrel_vs_trio</span>(h2)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">'Predicted relative effective sample of unrelated vs trios for population effects'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Predicted relative effective sample of unrelated vs trios for population effects"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(predicted_unrel_vs_trio)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.105263</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">'Empirical relative effective sample of unrelated vs sib for population effects'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Empirical relative effective sample of unrelated vs sib for population effects"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(empirical_unrel_vs_trio)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         [,1]
+[1,] 1.103495</code></pre>
+</div>
+</div>
+<p>Plot</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>base <span class="ot">&lt;-</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>,<span class="dv">1</span>)<span class="sc">+</span><span class="fu">ylim</span>(<span class="dv">0</span>,<span class="dv">1</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>ess_plot <span class="ot">=</span> base <span class="sc">+</span> <span class="fu">geom_function</span>(<span class="at">fun =</span> unrel_vs_trio_inv, <span class="at">color =</span> <span class="st">"#0072B2"</span>,<span class="at">size=</span><span class="fl">1.5</span>)<span class="sc">+</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun=</span>unrel_vs_sib_inv,<span class="at">color=</span><span class="st">"#D55E00"</span>,<span class="at">size=</span><span class="fl">1.5</span>)<span class="sc">+</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun=</span>unrel_vs_direct_trio,<span class="at">color=</span><span class="st">"#0072B2"</span>,<span class="at">linetype =</span> <span class="st">"longdash"</span>,<span class="at">size=</span><span class="fl">1.5</span>)<span class="sc">+</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun=</span>unrel_vs_direct_sibdiff,<span class="at">color=</span><span class="st">"#D55E00"</span>,<span class="at">linetype =</span> <span class="st">"longdash"</span>,<span class="at">size=</span><span class="fl">1.5</span>)<span class="sc">+</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun=</span>unrel_vs_direct_sibimp,<span class="at">color=</span><span class="st">"#D55E00"</span>,<span class="at">linetype=</span><span class="st">'twodash'</span>,<span class="at">size=</span><span class="fl">1.5</span>)<span class="sc">+</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">'Heritability'</span>)<span class="sc">+</span><span class="fu">ylab</span>(<span class="st">'Relative effective sample size'</span>)<span class="sc">+</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">color=</span><span class="st">"black"</span>),</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>                          <span class="at">axis.ticks =</span> <span class="fu">element_line</span>(<span class="at">color=</span><span class="st">"black"</span>),</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>                          <span class="at">panel.border =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>                          <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust=</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+ℹ Please use `linewidth` instead.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>ess_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="main_figs_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(ess_plot, <span class="at">file=</span><span class="st">'ESS_plot.pdf'</span>,<span class="at">width=</span><span class="dv">4</span>,<span class="at">height=</span><span class="dv">5</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co">#ggsave('ESS_plot.png',width=4,height=5)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>THIS IS FIG 4A IN THE PAPER</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>ess_plot2 <span class="ot">=</span> base <span class="sc">+</span> <span class="fu">geom_function</span>(<span class="at">fun =</span> unrel_vs_trio_inv, <span class="at">color =</span> <span class="st">"blue"</span>,<span class="at">size=</span><span class="fl">1.5</span>,<span class="at">linetype =</span> <span class="st">"longdash"</span>)<span class="sc">+</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun=</span>unrel_vs_sib_inv,<span class="at">color=</span><span class="st">"red"</span>,<span class="at">size=</span><span class="fl">1.5</span>,<span class="at">linetype =</span> <span class="st">"longdash"</span>)<span class="sc">+</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun=</span>unrel_vs_direct_trio,<span class="at">color=</span><span class="st">"blue"</span>,<span class="at">size=</span><span class="fl">1.5</span>)<span class="sc">+</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun=</span>unrel_vs_direct_sibdiff,<span class="at">color=</span><span class="st">"red"</span>,<span class="at">size=</span><span class="fl">1.5</span>)<span class="sc">+</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">''</span>)<span class="sc">+</span><span class="fu">ylab</span>(<span class="st">''</span>)<span class="sc">+</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">color=</span><span class="st">"black"</span>),</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>                          <span class="at">axis.ticks =</span> <span class="fu">element_line</span>(<span class="at">color=</span><span class="st">"black"</span>),</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>                          <span class="at">panel.border =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>                          <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust=</span><span class="dv">1</span>))</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>ess_plot2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="main_figs_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(ess_plot2, <span class="at">file=</span><span class="st">'ESS_plot.pdf'</span>,<span class="at">width=</span><span class="dv">4</span>,<span class="at">height=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="at">type=</span><span class="st">"n"</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="dv">3</span>,<span class="dv">5</span>,<span class="at">legend=</span><span class="fu">rep</span>(<span class="st">""</span>,<span class="dv">4</span>),<span class="at">lty=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">lwd=</span><span class="dv">3</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"blue"</span>,<span class="st">"red"</span>,<span class="st">"blue"</span>),<span class="at">bty=</span><span class="st">"n"</span>,<span class="at">cex=</span><span class="fl">1.1</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="dv">3</span>,<span class="dv">5</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">"n/2 sibling pairs (population)"</span>,<span class="st">"n/3 trios (population)"</span>,<span class="st">"n/2 sibling pairs (direct)"</span>,<span class="st">"n/3 trios (direct)"</span>),<span class="at">lty=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"blue"</span>,<span class="st">"red"</span>,<span class="st">"blue"</span>),<span class="at">bty=</span><span class="st">"n"</span>,<span class="at">cex=</span><span class="fl">1.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="main_figs_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>base <span class="ot">&lt;-</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>,<span class="fl">1.5</span>)<span class="sc">+</span><span class="fu">ylim</span>(<span class="dv">0</span>,<span class="fl">1.5</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>ess_plot <span class="ot">=</span> base <span class="sc">+</span> </span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun=</span>unrel_vs_sib_inv,<span class="at">color=</span><span class="st">"#D55E00"</span>,<span class="at">size=</span><span class="fl">1.5</span>)<span class="sc">+</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun=</span>unrel_vs_direct_sibdiff,<span class="at">color=</span><span class="st">"#D55E00"</span>,<span class="at">linetype =</span> <span class="st">"longdash"</span>,<span class="at">size=</span><span class="fl">1.5</span>)<span class="sc">+</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun=</span>unrel_vs_direct_sibimp,<span class="at">color=</span><span class="st">"#D55E00"</span>,<span class="at">linetype=</span><span class="st">'twodash'</span>,<span class="at">size=</span><span class="fl">1.5</span>)<span class="sc">+</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">'Sibling phenotype correlation'</span>)<span class="sc">+</span><span class="fu">ylab</span>(<span class="st">'Relative effective sample size'</span>)<span class="sc">+</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">color=</span><span class="st">"black"</span>),</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>                          <span class="at">axis.ticks =</span> <span class="fu">element_line</span>(<span class="at">color=</span><span class="st">"black"</span>),</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>                          <span class="at">panel.border =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>                          <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust=</span><span class="dv">1</span>))</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>ess_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="main_figs_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">'ESS_plot_sibs.pdf'</span>,<span class="at">width=</span><span class="dv">5</span>,<span class="at">height=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>THIS IS FIG 4B IN THE PAPER</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#We use this one - standardized effect</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co">#wildcards - try 2 with standardized betas</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>h2 <span class="ot">&lt;-</span> .<span class="dv">5</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> .<span class="dv">5</span> <span class="co">#SNP MAF</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">10</span><span class="sc">^</span><span class="fu">c</span>(<span class="fu">seq</span>(<span class="dv">5</span>,<span class="dv">7</span>,.<span class="dv">1</span>))</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>(bias2 <span class="ot">&lt;-</span> .<span class="dv">003</span><span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9e-06</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(bias2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.003</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co">#calculated</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>(var.beta.pop <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>n)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 1.000000e-05 7.943282e-06 6.309573e-06 5.011872e-06 3.981072e-06
+ [6] 3.162278e-06 2.511886e-06 1.995262e-06 1.584893e-06 1.258925e-06
+[11] 1.000000e-06 7.943282e-07 6.309573e-07 5.011872e-07 3.981072e-07
+[16] 3.162278e-07 2.511886e-07 1.995262e-07 1.584893e-07 1.258925e-07
+[21] 1.000000e-07</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>(var.beta.direct <span class="ot">&lt;-</span> var.beta.pop<span class="sc">/</span><span class="fu">unrel_vs_direct_sibdiff</span>(h2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 3.000000e-05 2.382985e-05 1.892872e-05 1.503562e-05 1.194322e-05
+ [6] 9.486833e-06 7.535659e-06 5.985787e-06 4.754680e-06 3.776776e-06
+[11] 3.000000e-06 2.382985e-06 1.892872e-06 1.503562e-06 1.194322e-06
+[16] 9.486833e-07 7.535659e-07 5.985787e-07 4.754680e-07 3.776776e-07
+[21] 3.000000e-07</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>(var.beta.trio <span class="ot">&lt;-</span> var.beta.pop<span class="sc">/</span><span class="fu">unrel_vs_direct_trio</span>(h2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 6.000000e-05 4.765969e-05 3.785744e-05 3.007123e-05 2.388643e-05
+ [6] 1.897367e-05 1.507132e-05 1.197157e-05 9.509359e-06 7.553552e-06
+[11] 6.000000e-06 4.765969e-06 3.785744e-06 3.007123e-06 2.388643e-06
+[16] 1.897367e-06 1.507132e-06 1.197157e-06 9.509359e-07 7.553552e-07
+[21] 6.000000e-07</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>(mse.pop <span class="ot">&lt;-</span> bias2 <span class="sc">+</span> var.beta.pop)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 1.900000e-05 1.694328e-05 1.530957e-05 1.401187e-05 1.298107e-05
+ [6] 1.216228e-05 1.151189e-05 1.099526e-05 1.058489e-05 1.025893e-05
+[11] 1.000000e-05 9.794328e-06 9.630957e-06 9.501187e-06 9.398107e-06
+[16] 9.316228e-06 9.251189e-06 9.199526e-06 9.158489e-06 9.125893e-06
+[21] 9.100000e-06</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>(mse.dir <span class="ot">&lt;-</span> var.beta.direct)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 3.000000e-05 2.382985e-05 1.892872e-05 1.503562e-05 1.194322e-05
+ [6] 9.486833e-06 7.535659e-06 5.985787e-06 4.754680e-06 3.776776e-06
+[11] 3.000000e-06 2.382985e-06 1.892872e-06 1.503562e-06 1.194322e-06
+[16] 9.486833e-07 7.535659e-07 5.985787e-07 4.754680e-07 3.776776e-07
+[21] 3.000000e-07</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>(mse.trio <span class="ot">&lt;-</span> var.beta.trio)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 6.000000e-05 4.765969e-05 3.785744e-05 3.007123e-05 2.388643e-05
+ [6] 1.897367e-05 1.507132e-05 1.197157e-05 9.509359e-06 7.553552e-06
+[11] 6.000000e-06 4.765969e-06 3.785744e-06 3.007123e-06 2.388643e-06
+[16] 1.897367e-06 1.507132e-06 1.197157e-06 9.509359e-07 7.553552e-07
+[21] 6.000000e-07</code></pre>
+</div>
+</div>
+<p>PLOT</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pdf</span>(<span class="st">"fig4b.pdf"</span>)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">quartz</span>()</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">log</span>(n,<span class="dv">10</span>),mse.dir,<span class="at">type=</span><span class="st">'l'</span>,<span class="at">col=</span><span class="st">'red'</span>,<span class="at">ylab=</span><span class="st">"MSE of GWAS Estimate (Inaccuracy)"</span>,<span class="at">xlab=</span><span class="st">"log10(n individuals)"</span>,<span class="at">lwd=</span><span class="dv">4</span>)</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">log</span>(n,<span class="dv">10</span>),mse.pop,<span class="at">type=</span><span class="st">'l'</span>,<span class="at">col=</span><span class="st">'black'</span>,<span class="at">lwd=</span><span class="dv">4</span>,<span class="at">lty=</span><span class="dv">2</span>)</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">log</span>(n,<span class="dv">10</span>),mse.trio,<span class="at">type=</span><span class="st">'l'</span>,<span class="at">col=</span><span class="st">'blue'</span>,<span class="at">lwd=</span><span class="dv">4</span>)</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span>bias2,<span class="at">lty=</span><span class="dv">3</span>,<span class="at">lwd=</span><span class="dv">4</span>,<span class="at">col=</span><span class="st">'orange'</span>)</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a><span class="co"># legend(5.55,3.0e-5,legend=rep("",4),lty=c(1,1,2,3),lwd=4,col=c("red","blue","black","orange"),bty="n",cex=1.5)</span></span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="fl">5.7</span>,<span class="fl">2.9e-5</span>,<span class="at">legend=</span><span class="fu">expression</span>(<span class="st">"n/2 sibling pairs (direct)"</span>,<span class="st">"n/3 trios (direct)"</span>,<span class="st">"n unrelateds (population)"</span>,<span class="st">"hypothetical"</span> <span class="sc">~</span> bias<span class="sc">^</span><span class="dv">2</span> <span class="sc">~</span><span class="st">""</span>),<span class="at">lty=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>),<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"blue"</span>,<span class="st">"black"</span>,<span class="st">"orange"</span>),<span class="at">bty=</span><span class="st">"n"</span>,<span class="at">cex=</span><span class="fl">1.5</span>)</span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+</div>
+</div>
+<p>Check exactly where the cross-over points are</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>h2 <span class="ot">&lt;-</span> .<span class="dv">5</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> .<span class="dv">5</span> <span class="co">#SNP MAF</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">10</span><span class="sc">^</span><span class="fu">c</span>(<span class="fu">seq</span>(<span class="dv">5</span>,<span class="dv">7</span>,.<span class="dv">01</span>))</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>(bias2 <span class="ot">&lt;-</span> .<span class="dv">003</span><span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9e-06</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(bias2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.003</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co">#calculated</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>(var.beta.pop <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>n)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] 1.000000e-05 9.772372e-06 9.549926e-06 9.332543e-06 9.120108e-06
+  [6] 8.912509e-06 8.709636e-06 8.511380e-06 8.317638e-06 8.128305e-06
+ [11] 7.943282e-06 7.762471e-06 7.585776e-06 7.413102e-06 7.244360e-06
+ [16] 7.079458e-06 6.918310e-06 6.760830e-06 6.606934e-06 6.456542e-06
+ [21] 6.309573e-06 6.165950e-06 6.025596e-06 5.888437e-06 5.754399e-06
+ [26] 5.623413e-06 5.495409e-06 5.370318e-06 5.248075e-06 5.128614e-06
+ [31] 5.011872e-06 4.897788e-06 4.786301e-06 4.677351e-06 4.570882e-06
+ [36] 4.466836e-06 4.365158e-06 4.265795e-06 4.168694e-06 4.073803e-06
+ [41] 3.981072e-06 3.890451e-06 3.801894e-06 3.715352e-06 3.630781e-06
+ [46] 3.548134e-06 3.467369e-06 3.388442e-06 3.311311e-06 3.235937e-06
+ [51] 3.162278e-06 3.090295e-06 3.019952e-06 2.951209e-06 2.884032e-06
+ [56] 2.818383e-06 2.754229e-06 2.691535e-06 2.630268e-06 2.570396e-06
+ [61] 2.511886e-06 2.454709e-06 2.398833e-06 2.344229e-06 2.290868e-06
+ [66] 2.238721e-06 2.187762e-06 2.137962e-06 2.089296e-06 2.041738e-06
+ [71] 1.995262e-06 1.949845e-06 1.905461e-06 1.862087e-06 1.819701e-06
+ [76] 1.778279e-06 1.737801e-06 1.698244e-06 1.659587e-06 1.621810e-06
+ [81] 1.584893e-06 1.548817e-06 1.513561e-06 1.479108e-06 1.445440e-06
+ [86] 1.412538e-06 1.380384e-06 1.348963e-06 1.318257e-06 1.288250e-06
+ [91] 1.258925e-06 1.230269e-06 1.202264e-06 1.174898e-06 1.148154e-06
+ [96] 1.122018e-06 1.096478e-06 1.071519e-06 1.047129e-06 1.023293e-06
+[101] 1.000000e-06 9.772372e-07 9.549926e-07 9.332543e-07 9.120108e-07
+[106] 8.912509e-07 8.709636e-07 8.511380e-07 8.317638e-07 8.128305e-07
+[111] 7.943282e-07 7.762471e-07 7.585776e-07 7.413102e-07 7.244360e-07
+[116] 7.079458e-07 6.918310e-07 6.760830e-07 6.606934e-07 6.456542e-07
+[121] 6.309573e-07 6.165950e-07 6.025596e-07 5.888437e-07 5.754399e-07
+[126] 5.623413e-07 5.495409e-07 5.370318e-07 5.248075e-07 5.128614e-07
+[131] 5.011872e-07 4.897788e-07 4.786301e-07 4.677351e-07 4.570882e-07
+[136] 4.466836e-07 4.365158e-07 4.265795e-07 4.168694e-07 4.073803e-07
+[141] 3.981072e-07 3.890451e-07 3.801894e-07 3.715352e-07 3.630781e-07
+[146] 3.548134e-07 3.467369e-07 3.388442e-07 3.311311e-07 3.235937e-07
+[151] 3.162278e-07 3.090295e-07 3.019952e-07 2.951209e-07 2.884032e-07
+[156] 2.818383e-07 2.754229e-07 2.691535e-07 2.630268e-07 2.570396e-07
+[161] 2.511886e-07 2.454709e-07 2.398833e-07 2.344229e-07 2.290868e-07
+[166] 2.238721e-07 2.187762e-07 2.137962e-07 2.089296e-07 2.041738e-07
+[171] 1.995262e-07 1.949845e-07 1.905461e-07 1.862087e-07 1.819701e-07
+[176] 1.778279e-07 1.737801e-07 1.698244e-07 1.659587e-07 1.621810e-07
+[181] 1.584893e-07 1.548817e-07 1.513561e-07 1.479108e-07 1.445440e-07
+[186] 1.412538e-07 1.380384e-07 1.348963e-07 1.318257e-07 1.288250e-07
+[191] 1.258925e-07 1.230269e-07 1.202264e-07 1.174898e-07 1.148154e-07
+[196] 1.122018e-07 1.096478e-07 1.071519e-07 1.047129e-07 1.023293e-07
+[201] 1.000000e-07</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>(var.beta.direct <span class="ot">&lt;-</span> var.beta.pop<span class="sc">/</span><span class="fu">unrel_vs_direct_sibdiff</span>(h2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] 3.000000e-05 2.931712e-05 2.864978e-05 2.799763e-05 2.736033e-05
+  [6] 2.673753e-05 2.612891e-05 2.553414e-05 2.495291e-05 2.438492e-05
+ [11] 2.382985e-05 2.328741e-05 2.275733e-05 2.223931e-05 2.173308e-05
+ [16] 2.123837e-05 2.075493e-05 2.028249e-05 1.982080e-05 1.936963e-05
+ [21] 1.892872e-05 1.849785e-05 1.807679e-05 1.766531e-05 1.726320e-05
+ [26] 1.687024e-05 1.648623e-05 1.611095e-05 1.574422e-05 1.538584e-05
+ [31] 1.503562e-05 1.469336e-05 1.435890e-05 1.403205e-05 1.371265e-05
+ [36] 1.340051e-05 1.309547e-05 1.279739e-05 1.250608e-05 1.222141e-05
+ [41] 1.194322e-05 1.167135e-05 1.140568e-05 1.114606e-05 1.089234e-05
+ [46] 1.064440e-05 1.040211e-05 1.016532e-05 9.933934e-06 9.707810e-06
+ [51] 9.486833e-06 9.270886e-06 9.059855e-06 8.853628e-06 8.652095e-06
+ [56] 8.455149e-06 8.262686e-06 8.074604e-06 7.890804e-06 7.711187e-06
+ [61] 7.535659e-06 7.364127e-06 7.196499e-06 7.032686e-06 6.872603e-06
+ [66] 6.716163e-06 6.563285e-06 6.413886e-06 6.267888e-06 6.125214e-06
+ [71] 5.985787e-06 5.849534e-06 5.716382e-06 5.586261e-06 5.459103e-06
+ [76] 5.334838e-06 5.213402e-06 5.094731e-06 4.978761e-06 4.865430e-06
+ [81] 4.754680e-06 4.646450e-06 4.540684e-06 4.437325e-06 4.336319e-06
+ [86] 4.237613e-06 4.141153e-06 4.046889e-06 3.954770e-06 3.864749e-06
+ [91] 3.776776e-06 3.690806e-06 3.606793e-06 3.524693e-06 3.444461e-06
+ [96] 3.366055e-06 3.289435e-06 3.214558e-06 3.141386e-06 3.069879e-06
+[101] 3.000000e-06 2.931712e-06 2.864978e-06 2.799763e-06 2.736033e-06
+[106] 2.673753e-06 2.612891e-06 2.553414e-06 2.495291e-06 2.438492e-06
+[111] 2.382985e-06 2.328741e-06 2.275733e-06 2.223931e-06 2.173308e-06
+[116] 2.123837e-06 2.075493e-06 2.028249e-06 1.982080e-06 1.936963e-06
+[121] 1.892872e-06 1.849785e-06 1.807679e-06 1.766531e-06 1.726320e-06
+[126] 1.687024e-06 1.648623e-06 1.611095e-06 1.574422e-06 1.538584e-06
+[131] 1.503562e-06 1.469336e-06 1.435890e-06 1.403205e-06 1.371265e-06
+[136] 1.340051e-06 1.309547e-06 1.279739e-06 1.250608e-06 1.222141e-06
+[141] 1.194322e-06 1.167135e-06 1.140568e-06 1.114606e-06 1.089234e-06
+[146] 1.064440e-06 1.040211e-06 1.016532e-06 9.933934e-07 9.707810e-07
+[151] 9.486833e-07 9.270886e-07 9.059855e-07 8.853628e-07 8.652095e-07
+[156] 8.455149e-07 8.262686e-07 8.074604e-07 7.890804e-07 7.711187e-07
+[161] 7.535659e-07 7.364127e-07 7.196499e-07 7.032686e-07 6.872603e-07
+[166] 6.716163e-07 6.563285e-07 6.413886e-07 6.267888e-07 6.125214e-07
+[171] 5.985787e-07 5.849534e-07 5.716382e-07 5.586261e-07 5.459103e-07
+[176] 5.334838e-07 5.213402e-07 5.094731e-07 4.978761e-07 4.865430e-07
+[181] 4.754680e-07 4.646450e-07 4.540684e-07 4.437325e-07 4.336319e-07
+[186] 4.237613e-07 4.141153e-07 4.046889e-07 3.954770e-07 3.864749e-07
+[191] 3.776776e-07 3.690806e-07 3.606793e-07 3.524693e-07 3.444461e-07
+[196] 3.366055e-07 3.289435e-07 3.214558e-07 3.141386e-07 3.069879e-07
+[201] 3.000000e-07</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>(var.beta.trio <span class="ot">&lt;-</span> var.beta.pop<span class="sc">/</span><span class="fu">unrel_vs_direct_trio</span>(h2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] 6.000000e-05 5.863423e-05 5.729956e-05 5.599526e-05 5.472065e-05
+  [6] 5.347506e-05 5.225782e-05 5.106828e-05 4.990583e-05 4.876983e-05
+ [11] 4.765969e-05 4.657483e-05 4.551465e-05 4.447861e-05 4.346616e-05
+ [16] 4.247675e-05 4.150986e-05 4.056498e-05 3.964161e-05 3.873925e-05
+ [21] 3.785744e-05 3.699570e-05 3.615358e-05 3.533062e-05 3.452640e-05
+ [26] 3.374048e-05 3.297245e-05 3.222191e-05 3.148845e-05 3.077168e-05
+ [31] 3.007123e-05 2.938673e-05 2.871781e-05 2.806411e-05 2.742529e-05
+ [36] 2.680102e-05 2.619095e-05 2.559477e-05 2.501216e-05 2.444282e-05
+ [41] 2.388643e-05 2.334271e-05 2.281136e-05 2.229211e-05 2.178468e-05
+ [46] 2.128880e-05 2.080421e-05 2.033065e-05 1.986787e-05 1.941562e-05
+ [51] 1.897367e-05 1.854177e-05 1.811971e-05 1.770726e-05 1.730419e-05
+ [56] 1.691030e-05 1.652537e-05 1.614921e-05 1.578161e-05 1.542237e-05
+ [61] 1.507132e-05 1.472825e-05 1.439300e-05 1.406537e-05 1.374521e-05
+ [66] 1.343233e-05 1.312657e-05 1.282777e-05 1.253578e-05 1.225043e-05
+ [71] 1.197157e-05 1.169907e-05 1.143276e-05 1.117252e-05 1.091821e-05
+ [76] 1.066968e-05 1.042680e-05 1.018946e-05 9.957521e-06 9.730861e-06
+ [81] 9.509359e-06 9.292900e-06 9.081367e-06 8.874650e-06 8.672639e-06
+ [86] 8.475225e-06 8.282306e-06 8.093777e-06 7.909540e-06 7.729497e-06
+ [91] 7.553552e-06 7.381613e-06 7.213587e-06 7.049385e-06 6.888922e-06
+ [96] 6.732111e-06 6.578869e-06 6.429116e-06 6.282771e-06 6.139758e-06
+[101] 6.000000e-06 5.863423e-06 5.729956e-06 5.599526e-06 5.472065e-06
+[106] 5.347506e-06 5.225782e-06 5.106828e-06 4.990583e-06 4.876983e-06
+[111] 4.765969e-06 4.657483e-06 4.551465e-06 4.447861e-06 4.346616e-06
+[116] 4.247675e-06 4.150986e-06 4.056498e-06 3.964161e-06 3.873925e-06
+[121] 3.785744e-06 3.699570e-06 3.615358e-06 3.533062e-06 3.452640e-06
+[126] 3.374048e-06 3.297245e-06 3.222191e-06 3.148845e-06 3.077168e-06
+[131] 3.007123e-06 2.938673e-06 2.871781e-06 2.806411e-06 2.742529e-06
+[136] 2.680102e-06 2.619095e-06 2.559477e-06 2.501216e-06 2.444282e-06
+[141] 2.388643e-06 2.334271e-06 2.281136e-06 2.229211e-06 2.178468e-06
+[146] 2.128880e-06 2.080421e-06 2.033065e-06 1.986787e-06 1.941562e-06
+[151] 1.897367e-06 1.854177e-06 1.811971e-06 1.770726e-06 1.730419e-06
+[156] 1.691030e-06 1.652537e-06 1.614921e-06 1.578161e-06 1.542237e-06
+[161] 1.507132e-06 1.472825e-06 1.439300e-06 1.406537e-06 1.374521e-06
+[166] 1.343233e-06 1.312657e-06 1.282777e-06 1.253578e-06 1.225043e-06
+[171] 1.197157e-06 1.169907e-06 1.143276e-06 1.117252e-06 1.091821e-06
+[176] 1.066968e-06 1.042680e-06 1.018946e-06 9.957521e-07 9.730861e-07
+[181] 9.509359e-07 9.292900e-07 9.081367e-07 8.874650e-07 8.672639e-07
+[186] 8.475225e-07 8.282306e-07 8.093777e-07 7.909540e-07 7.729497e-07
+[191] 7.553552e-07 7.381613e-07 7.213587e-07 7.049385e-07 6.888922e-07
+[196] 6.732111e-07 6.578869e-07 6.429116e-07 6.282771e-07 6.139758e-07
+[201] 6.000000e-07</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>(mse.pop <span class="ot">&lt;-</span> bias2 <span class="sc">+</span> var.beta.pop)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] 1.900000e-05 1.877237e-05 1.854993e-05 1.833254e-05 1.812011e-05
+  [6] 1.791251e-05 1.770964e-05 1.751138e-05 1.731764e-05 1.712831e-05
+ [11] 1.694328e-05 1.676247e-05 1.658578e-05 1.641310e-05 1.624436e-05
+ [16] 1.607946e-05 1.591831e-05 1.576083e-05 1.560693e-05 1.545654e-05
+ [21] 1.530957e-05 1.516595e-05 1.502560e-05 1.488844e-05 1.475440e-05
+ [26] 1.462341e-05 1.449541e-05 1.437032e-05 1.424807e-05 1.412861e-05
+ [31] 1.401187e-05 1.389779e-05 1.378630e-05 1.367735e-05 1.357088e-05
+ [36] 1.346684e-05 1.336516e-05 1.326580e-05 1.316869e-05 1.307380e-05
+ [41] 1.298107e-05 1.289045e-05 1.280189e-05 1.271535e-05 1.263078e-05
+ [46] 1.254813e-05 1.246737e-05 1.238844e-05 1.231131e-05 1.223594e-05
+ [51] 1.216228e-05 1.209030e-05 1.201995e-05 1.195121e-05 1.188403e-05
+ [56] 1.181838e-05 1.175423e-05 1.169153e-05 1.163027e-05 1.157040e-05
+ [61] 1.151189e-05 1.145471e-05 1.139883e-05 1.134423e-05 1.129087e-05
+ [66] 1.123872e-05 1.118776e-05 1.113796e-05 1.108930e-05 1.104174e-05
+ [71] 1.099526e-05 1.094984e-05 1.090546e-05 1.086209e-05 1.081970e-05
+ [76] 1.077828e-05 1.073780e-05 1.069824e-05 1.065959e-05 1.062181e-05
+ [81] 1.058489e-05 1.054882e-05 1.051356e-05 1.047911e-05 1.044544e-05
+ [86] 1.041254e-05 1.038038e-05 1.034896e-05 1.031826e-05 1.028825e-05
+ [91] 1.025893e-05 1.023027e-05 1.020226e-05 1.017490e-05 1.014815e-05
+ [96] 1.012202e-05 1.009648e-05 1.007152e-05 1.004713e-05 1.002329e-05
+[101] 1.000000e-05 9.977237e-06 9.954993e-06 9.933254e-06 9.912011e-06
+[106] 9.891251e-06 9.870964e-06 9.851138e-06 9.831764e-06 9.812831e-06
+[111] 9.794328e-06 9.776247e-06 9.758578e-06 9.741310e-06 9.724436e-06
+[116] 9.707946e-06 9.691831e-06 9.676083e-06 9.660693e-06 9.645654e-06
+[121] 9.630957e-06 9.616595e-06 9.602560e-06 9.588844e-06 9.575440e-06
+[126] 9.562341e-06 9.549541e-06 9.537032e-06 9.524807e-06 9.512861e-06
+[131] 9.501187e-06 9.489779e-06 9.478630e-06 9.467735e-06 9.457088e-06
+[136] 9.446684e-06 9.436516e-06 9.426580e-06 9.416869e-06 9.407380e-06
+[141] 9.398107e-06 9.389045e-06 9.380189e-06 9.371535e-06 9.363078e-06
+[146] 9.354813e-06 9.346737e-06 9.338844e-06 9.331131e-06 9.323594e-06
+[151] 9.316228e-06 9.309030e-06 9.301995e-06 9.295121e-06 9.288403e-06
+[156] 9.281838e-06 9.275423e-06 9.269153e-06 9.263027e-06 9.257040e-06
+[161] 9.251189e-06 9.245471e-06 9.239883e-06 9.234423e-06 9.229087e-06
+[166] 9.223872e-06 9.218776e-06 9.213796e-06 9.208930e-06 9.204174e-06
+[171] 9.199526e-06 9.194984e-06 9.190546e-06 9.186209e-06 9.181970e-06
+[176] 9.177828e-06 9.173780e-06 9.169824e-06 9.165959e-06 9.162181e-06
+[181] 9.158489e-06 9.154882e-06 9.151356e-06 9.147911e-06 9.144544e-06
+[186] 9.141254e-06 9.138038e-06 9.134896e-06 9.131826e-06 9.128825e-06
+[191] 9.125893e-06 9.123027e-06 9.120226e-06 9.117490e-06 9.114815e-06
+[196] 9.112202e-06 9.109648e-06 9.107152e-06 9.104713e-06 9.102329e-06
+[201] 9.100000e-06</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>(mse.dir <span class="ot">&lt;-</span> var.beta.direct)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] 3.000000e-05 2.931712e-05 2.864978e-05 2.799763e-05 2.736033e-05
+  [6] 2.673753e-05 2.612891e-05 2.553414e-05 2.495291e-05 2.438492e-05
+ [11] 2.382985e-05 2.328741e-05 2.275733e-05 2.223931e-05 2.173308e-05
+ [16] 2.123837e-05 2.075493e-05 2.028249e-05 1.982080e-05 1.936963e-05
+ [21] 1.892872e-05 1.849785e-05 1.807679e-05 1.766531e-05 1.726320e-05
+ [26] 1.687024e-05 1.648623e-05 1.611095e-05 1.574422e-05 1.538584e-05
+ [31] 1.503562e-05 1.469336e-05 1.435890e-05 1.403205e-05 1.371265e-05
+ [36] 1.340051e-05 1.309547e-05 1.279739e-05 1.250608e-05 1.222141e-05
+ [41] 1.194322e-05 1.167135e-05 1.140568e-05 1.114606e-05 1.089234e-05
+ [46] 1.064440e-05 1.040211e-05 1.016532e-05 9.933934e-06 9.707810e-06
+ [51] 9.486833e-06 9.270886e-06 9.059855e-06 8.853628e-06 8.652095e-06
+ [56] 8.455149e-06 8.262686e-06 8.074604e-06 7.890804e-06 7.711187e-06
+ [61] 7.535659e-06 7.364127e-06 7.196499e-06 7.032686e-06 6.872603e-06
+ [66] 6.716163e-06 6.563285e-06 6.413886e-06 6.267888e-06 6.125214e-06
+ [71] 5.985787e-06 5.849534e-06 5.716382e-06 5.586261e-06 5.459103e-06
+ [76] 5.334838e-06 5.213402e-06 5.094731e-06 4.978761e-06 4.865430e-06
+ [81] 4.754680e-06 4.646450e-06 4.540684e-06 4.437325e-06 4.336319e-06
+ [86] 4.237613e-06 4.141153e-06 4.046889e-06 3.954770e-06 3.864749e-06
+ [91] 3.776776e-06 3.690806e-06 3.606793e-06 3.524693e-06 3.444461e-06
+ [96] 3.366055e-06 3.289435e-06 3.214558e-06 3.141386e-06 3.069879e-06
+[101] 3.000000e-06 2.931712e-06 2.864978e-06 2.799763e-06 2.736033e-06
+[106] 2.673753e-06 2.612891e-06 2.553414e-06 2.495291e-06 2.438492e-06
+[111] 2.382985e-06 2.328741e-06 2.275733e-06 2.223931e-06 2.173308e-06
+[116] 2.123837e-06 2.075493e-06 2.028249e-06 1.982080e-06 1.936963e-06
+[121] 1.892872e-06 1.849785e-06 1.807679e-06 1.766531e-06 1.726320e-06
+[126] 1.687024e-06 1.648623e-06 1.611095e-06 1.574422e-06 1.538584e-06
+[131] 1.503562e-06 1.469336e-06 1.435890e-06 1.403205e-06 1.371265e-06
+[136] 1.340051e-06 1.309547e-06 1.279739e-06 1.250608e-06 1.222141e-06
+[141] 1.194322e-06 1.167135e-06 1.140568e-06 1.114606e-06 1.089234e-06
+[146] 1.064440e-06 1.040211e-06 1.016532e-06 9.933934e-07 9.707810e-07
+[151] 9.486833e-07 9.270886e-07 9.059855e-07 8.853628e-07 8.652095e-07
+[156] 8.455149e-07 8.262686e-07 8.074604e-07 7.890804e-07 7.711187e-07
+[161] 7.535659e-07 7.364127e-07 7.196499e-07 7.032686e-07 6.872603e-07
+[166] 6.716163e-07 6.563285e-07 6.413886e-07 6.267888e-07 6.125214e-07
+[171] 5.985787e-07 5.849534e-07 5.716382e-07 5.586261e-07 5.459103e-07
+[176] 5.334838e-07 5.213402e-07 5.094731e-07 4.978761e-07 4.865430e-07
+[181] 4.754680e-07 4.646450e-07 4.540684e-07 4.437325e-07 4.336319e-07
+[186] 4.237613e-07 4.141153e-07 4.046889e-07 3.954770e-07 3.864749e-07
+[191] 3.776776e-07 3.690806e-07 3.606793e-07 3.524693e-07 3.444461e-07
+[196] 3.366055e-07 3.289435e-07 3.214558e-07 3.141386e-07 3.069879e-07
+[201] 3.000000e-07</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>(mse.trio <span class="ot">&lt;-</span> var.beta.trio)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] 6.000000e-05 5.863423e-05 5.729956e-05 5.599526e-05 5.472065e-05
+  [6] 5.347506e-05 5.225782e-05 5.106828e-05 4.990583e-05 4.876983e-05
+ [11] 4.765969e-05 4.657483e-05 4.551465e-05 4.447861e-05 4.346616e-05
+ [16] 4.247675e-05 4.150986e-05 4.056498e-05 3.964161e-05 3.873925e-05
+ [21] 3.785744e-05 3.699570e-05 3.615358e-05 3.533062e-05 3.452640e-05
+ [26] 3.374048e-05 3.297245e-05 3.222191e-05 3.148845e-05 3.077168e-05
+ [31] 3.007123e-05 2.938673e-05 2.871781e-05 2.806411e-05 2.742529e-05
+ [36] 2.680102e-05 2.619095e-05 2.559477e-05 2.501216e-05 2.444282e-05
+ [41] 2.388643e-05 2.334271e-05 2.281136e-05 2.229211e-05 2.178468e-05
+ [46] 2.128880e-05 2.080421e-05 2.033065e-05 1.986787e-05 1.941562e-05
+ [51] 1.897367e-05 1.854177e-05 1.811971e-05 1.770726e-05 1.730419e-05
+ [56] 1.691030e-05 1.652537e-05 1.614921e-05 1.578161e-05 1.542237e-05
+ [61] 1.507132e-05 1.472825e-05 1.439300e-05 1.406537e-05 1.374521e-05
+ [66] 1.343233e-05 1.312657e-05 1.282777e-05 1.253578e-05 1.225043e-05
+ [71] 1.197157e-05 1.169907e-05 1.143276e-05 1.117252e-05 1.091821e-05
+ [76] 1.066968e-05 1.042680e-05 1.018946e-05 9.957521e-06 9.730861e-06
+ [81] 9.509359e-06 9.292900e-06 9.081367e-06 8.874650e-06 8.672639e-06
+ [86] 8.475225e-06 8.282306e-06 8.093777e-06 7.909540e-06 7.729497e-06
+ [91] 7.553552e-06 7.381613e-06 7.213587e-06 7.049385e-06 6.888922e-06
+ [96] 6.732111e-06 6.578869e-06 6.429116e-06 6.282771e-06 6.139758e-06
+[101] 6.000000e-06 5.863423e-06 5.729956e-06 5.599526e-06 5.472065e-06
+[106] 5.347506e-06 5.225782e-06 5.106828e-06 4.990583e-06 4.876983e-06
+[111] 4.765969e-06 4.657483e-06 4.551465e-06 4.447861e-06 4.346616e-06
+[116] 4.247675e-06 4.150986e-06 4.056498e-06 3.964161e-06 3.873925e-06
+[121] 3.785744e-06 3.699570e-06 3.615358e-06 3.533062e-06 3.452640e-06
+[126] 3.374048e-06 3.297245e-06 3.222191e-06 3.148845e-06 3.077168e-06
+[131] 3.007123e-06 2.938673e-06 2.871781e-06 2.806411e-06 2.742529e-06
+[136] 2.680102e-06 2.619095e-06 2.559477e-06 2.501216e-06 2.444282e-06
+[141] 2.388643e-06 2.334271e-06 2.281136e-06 2.229211e-06 2.178468e-06
+[146] 2.128880e-06 2.080421e-06 2.033065e-06 1.986787e-06 1.941562e-06
+[151] 1.897367e-06 1.854177e-06 1.811971e-06 1.770726e-06 1.730419e-06
+[156] 1.691030e-06 1.652537e-06 1.614921e-06 1.578161e-06 1.542237e-06
+[161] 1.507132e-06 1.472825e-06 1.439300e-06 1.406537e-06 1.374521e-06
+[166] 1.343233e-06 1.312657e-06 1.282777e-06 1.253578e-06 1.225043e-06
+[171] 1.197157e-06 1.169907e-06 1.143276e-06 1.117252e-06 1.091821e-06
+[176] 1.066968e-06 1.042680e-06 1.018946e-06 9.957521e-07 9.730861e-07
+[181] 9.509359e-07 9.292900e-07 9.081367e-07 8.874650e-07 8.672639e-07
+[186] 8.475225e-07 8.282306e-07 8.093777e-07 7.909540e-07 7.729497e-07
+[191] 7.553552e-07 7.381613e-07 7.213587e-07 7.049385e-07 6.888922e-07
+[196] 6.732111e-07 6.578869e-07 6.429116e-07 6.282771e-07 6.139758e-07
+[201] 6.000000e-07</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(n,<span class="fu">log</span>(n,<span class="dv">10</span>),mse.pop,mse.dir,mse.trio,mse.dir<span class="sc">&lt;</span>mse.pop,mse.trio<span class="sc">&lt;</span>mse.pop)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                n           mse.pop      mse.dir     mse.trio    
+  [1,]   100000.0 5.00 1.900000e-05 3.000000e-05 6.000000e-05 0 0
+  [2,]   102329.3 5.01 1.877237e-05 2.931712e-05 5.863423e-05 0 0
+  [3,]   104712.9 5.02 1.854993e-05 2.864978e-05 5.729956e-05 0 0
+  [4,]   107151.9 5.03 1.833254e-05 2.799763e-05 5.599526e-05 0 0
+  [5,]   109647.8 5.04 1.812011e-05 2.736033e-05 5.472065e-05 0 0
+  [6,]   112201.8 5.05 1.791251e-05 2.673753e-05 5.347506e-05 0 0
+  [7,]   114815.4 5.06 1.770964e-05 2.612891e-05 5.225782e-05 0 0
+  [8,]   117489.8 5.07 1.751138e-05 2.553414e-05 5.106828e-05 0 0
+  [9,]   120226.4 5.08 1.731764e-05 2.495291e-05 4.990583e-05 0 0
+ [10,]   123026.9 5.09 1.712831e-05 2.438492e-05 4.876983e-05 0 0
+ [11,]   125892.5 5.10 1.694328e-05 2.382985e-05 4.765969e-05 0 0
+ [12,]   128825.0 5.11 1.676247e-05 2.328741e-05 4.657483e-05 0 0
+ [13,]   131825.7 5.12 1.658578e-05 2.275733e-05 4.551465e-05 0 0
+ [14,]   134896.3 5.13 1.641310e-05 2.223931e-05 4.447861e-05 0 0
+ [15,]   138038.4 5.14 1.624436e-05 2.173308e-05 4.346616e-05 0 0
+ [16,]   141253.8 5.15 1.607946e-05 2.123837e-05 4.247675e-05 0 0
+ [17,]   144544.0 5.16 1.591831e-05 2.075493e-05 4.150986e-05 0 0
+ [18,]   147910.8 5.17 1.576083e-05 2.028249e-05 4.056498e-05 0 0
+ [19,]   151356.1 5.18 1.560693e-05 1.982080e-05 3.964161e-05 0 0
+ [20,]   154881.7 5.19 1.545654e-05 1.936963e-05 3.873925e-05 0 0
+ [21,]   158489.3 5.20 1.530957e-05 1.892872e-05 3.785744e-05 0 0
+ [22,]   162181.0 5.21 1.516595e-05 1.849785e-05 3.699570e-05 0 0
+ [23,]   165958.7 5.22 1.502560e-05 1.807679e-05 3.615358e-05 0 0
+ [24,]   169824.4 5.23 1.488844e-05 1.766531e-05 3.533062e-05 0 0
+ [25,]   173780.1 5.24 1.475440e-05 1.726320e-05 3.452640e-05 0 0
+ [26,]   177827.9 5.25 1.462341e-05 1.687024e-05 3.374048e-05 0 0
+ [27,]   181970.1 5.26 1.449541e-05 1.648623e-05 3.297245e-05 0 0
+ [28,]   186208.7 5.27 1.437032e-05 1.611095e-05 3.222191e-05 0 0
+ [29,]   190546.1 5.28 1.424807e-05 1.574422e-05 3.148845e-05 0 0
+ [30,]   194984.5 5.29 1.412861e-05 1.538584e-05 3.077168e-05 0 0
+ [31,]   199526.2 5.30 1.401187e-05 1.503562e-05 3.007123e-05 0 0
+ [32,]   204173.8 5.31 1.389779e-05 1.469336e-05 2.938673e-05 0 0
+ [33,]   208929.6 5.32 1.378630e-05 1.435890e-05 2.871781e-05 0 0
+ [34,]   213796.2 5.33 1.367735e-05 1.403205e-05 2.806411e-05 0 0
+ [35,]   218776.2 5.34 1.357088e-05 1.371265e-05 2.742529e-05 0 0
+ [36,]   223872.1 5.35 1.346684e-05 1.340051e-05 2.680102e-05 1 0
+ [37,]   229086.8 5.36 1.336516e-05 1.309547e-05 2.619095e-05 1 0
+ [38,]   234422.9 5.37 1.326580e-05 1.279739e-05 2.559477e-05 1 0
+ [39,]   239883.3 5.38 1.316869e-05 1.250608e-05 2.501216e-05 1 0
+ [40,]   245470.9 5.39 1.307380e-05 1.222141e-05 2.444282e-05 1 0
+ [41,]   251188.6 5.40 1.298107e-05 1.194322e-05 2.388643e-05 1 0
+ [42,]   257039.6 5.41 1.289045e-05 1.167135e-05 2.334271e-05 1 0
+ [43,]   263026.8 5.42 1.280189e-05 1.140568e-05 2.281136e-05 1 0
+ [44,]   269153.5 5.43 1.271535e-05 1.114606e-05 2.229211e-05 1 0
+ [45,]   275422.9 5.44 1.263078e-05 1.089234e-05 2.178468e-05 1 0
+ [46,]   281838.3 5.45 1.254813e-05 1.064440e-05 2.128880e-05 1 0
+ [47,]   288403.2 5.46 1.246737e-05 1.040211e-05 2.080421e-05 1 0
+ [48,]   295120.9 5.47 1.238844e-05 1.016532e-05 2.033065e-05 1 0
+ [49,]   301995.2 5.48 1.231131e-05 9.933934e-06 1.986787e-05 1 0
+ [50,]   309029.5 5.49 1.223594e-05 9.707810e-06 1.941562e-05 1 0
+ [51,]   316227.8 5.50 1.216228e-05 9.486833e-06 1.897367e-05 1 0
+ [52,]   323593.7 5.51 1.209030e-05 9.270886e-06 1.854177e-05 1 0
+ [53,]   331131.1 5.52 1.201995e-05 9.059855e-06 1.811971e-05 1 0
+ [54,]   338844.2 5.53 1.195121e-05 8.853628e-06 1.770726e-05 1 0
+ [55,]   346736.9 5.54 1.188403e-05 8.652095e-06 1.730419e-05 1 0
+ [56,]   354813.4 5.55 1.181838e-05 8.455149e-06 1.691030e-05 1 0
+ [57,]   363078.1 5.56 1.175423e-05 8.262686e-06 1.652537e-05 1 0
+ [58,]   371535.2 5.57 1.169153e-05 8.074604e-06 1.614921e-05 1 0
+ [59,]   380189.4 5.58 1.163027e-05 7.890804e-06 1.578161e-05 1 0
+ [60,]   389045.1 5.59 1.157040e-05 7.711187e-06 1.542237e-05 1 0
+ [61,]   398107.2 5.60 1.151189e-05 7.535659e-06 1.507132e-05 1 0
+ [62,]   407380.3 5.61 1.145471e-05 7.364127e-06 1.472825e-05 1 0
+ [63,]   416869.4 5.62 1.139883e-05 7.196499e-06 1.439300e-05 1 0
+ [64,]   426579.5 5.63 1.134423e-05 7.032686e-06 1.406537e-05 1 0
+ [65,]   436515.8 5.64 1.129087e-05 6.872603e-06 1.374521e-05 1 0
+ [66,]   446683.6 5.65 1.123872e-05 6.716163e-06 1.343233e-05 1 0
+ [67,]   457088.2 5.66 1.118776e-05 6.563285e-06 1.312657e-05 1 0
+ [68,]   467735.1 5.67 1.113796e-05 6.413886e-06 1.282777e-05 1 0
+ [69,]   478630.1 5.68 1.108930e-05 6.267888e-06 1.253578e-05 1 0
+ [70,]   489778.8 5.69 1.104174e-05 6.125214e-06 1.225043e-05 1 0
+ [71,]   501187.2 5.70 1.099526e-05 5.985787e-06 1.197157e-05 1 0
+ [72,]   512861.4 5.71 1.094984e-05 5.849534e-06 1.169907e-05 1 0
+ [73,]   524807.5 5.72 1.090546e-05 5.716382e-06 1.143276e-05 1 0
+ [74,]   537031.8 5.73 1.086209e-05 5.586261e-06 1.117252e-05 1 0
+ [75,]   549540.9 5.74 1.081970e-05 5.459103e-06 1.091821e-05 1 0
+ [76,]   562341.3 5.75 1.077828e-05 5.334838e-06 1.066968e-05 1 1
+ [77,]   575439.9 5.76 1.073780e-05 5.213402e-06 1.042680e-05 1 1
+ [78,]   588843.7 5.77 1.069824e-05 5.094731e-06 1.018946e-05 1 1
+ [79,]   602559.6 5.78 1.065959e-05 4.978761e-06 9.957521e-06 1 1
+ [80,]   616595.0 5.79 1.062181e-05 4.865430e-06 9.730861e-06 1 1
+ [81,]   630957.3 5.80 1.058489e-05 4.754680e-06 9.509359e-06 1 1
+ [82,]   645654.2 5.81 1.054882e-05 4.646450e-06 9.292900e-06 1 1
+ [83,]   660693.4 5.82 1.051356e-05 4.540684e-06 9.081367e-06 1 1
+ [84,]   676083.0 5.83 1.047911e-05 4.437325e-06 8.874650e-06 1 1
+ [85,]   691831.0 5.84 1.044544e-05 4.336319e-06 8.672639e-06 1 1
+ [86,]   707945.8 5.85 1.041254e-05 4.237613e-06 8.475225e-06 1 1
+ [87,]   724436.0 5.86 1.038038e-05 4.141153e-06 8.282306e-06 1 1
+ [88,]   741310.2 5.87 1.034896e-05 4.046889e-06 8.093777e-06 1 1
+ [89,]   758577.6 5.88 1.031826e-05 3.954770e-06 7.909540e-06 1 1
+ [90,]   776247.1 5.89 1.028825e-05 3.864749e-06 7.729497e-06 1 1
+ [91,]   794328.2 5.90 1.025893e-05 3.776776e-06 7.553552e-06 1 1
+ [92,]   812830.5 5.91 1.023027e-05 3.690806e-06 7.381613e-06 1 1
+ [93,]   831763.8 5.92 1.020226e-05 3.606793e-06 7.213587e-06 1 1
+ [94,]   851138.0 5.93 1.017490e-05 3.524693e-06 7.049385e-06 1 1
+ [95,]   870963.6 5.94 1.014815e-05 3.444461e-06 6.888922e-06 1 1
+ [96,]   891250.9 5.95 1.012202e-05 3.366055e-06 6.732111e-06 1 1
+ [97,]   912010.8 5.96 1.009648e-05 3.289435e-06 6.578869e-06 1 1
+ [98,]   933254.3 5.97 1.007152e-05 3.214558e-06 6.429116e-06 1 1
+ [99,]   954992.6 5.98 1.004713e-05 3.141386e-06 6.282771e-06 1 1
+[100,]   977237.2 5.99 1.002329e-05 3.069879e-06 6.139758e-06 1 1
+[101,]  1000000.0 6.00 1.000000e-05 3.000000e-06 6.000000e-06 1 1
+[102,]  1023293.0 6.01 9.977237e-06 2.931712e-06 5.863423e-06 1 1
+[103,]  1047128.5 6.02 9.954993e-06 2.864978e-06 5.729956e-06 1 1
+[104,]  1071519.3 6.03 9.933254e-06 2.799763e-06 5.599526e-06 1 1
+[105,]  1096478.2 6.04 9.912011e-06 2.736033e-06 5.472065e-06 1 1
+[106,]  1122018.5 6.05 9.891251e-06 2.673753e-06 5.347506e-06 1 1
+[107,]  1148153.6 6.06 9.870964e-06 2.612891e-06 5.225782e-06 1 1
+[108,]  1174897.6 6.07 9.851138e-06 2.553414e-06 5.106828e-06 1 1
+[109,]  1202264.4 6.08 9.831764e-06 2.495291e-06 4.990583e-06 1 1
+[110,]  1230268.8 6.09 9.812831e-06 2.438492e-06 4.876983e-06 1 1
+[111,]  1258925.4 6.10 9.794328e-06 2.382985e-06 4.765969e-06 1 1
+[112,]  1288249.6 6.11 9.776247e-06 2.328741e-06 4.657483e-06 1 1
+[113,]  1318256.7 6.12 9.758578e-06 2.275733e-06 4.551465e-06 1 1
+[114,]  1348962.9 6.13 9.741310e-06 2.223931e-06 4.447861e-06 1 1
+[115,]  1380384.3 6.14 9.724436e-06 2.173308e-06 4.346616e-06 1 1
+[116,]  1412537.5 6.15 9.707946e-06 2.123837e-06 4.247675e-06 1 1
+[117,]  1445439.8 6.16 9.691831e-06 2.075493e-06 4.150986e-06 1 1
+[118,]  1479108.4 6.17 9.676083e-06 2.028249e-06 4.056498e-06 1 1
+[119,]  1513561.2 6.18 9.660693e-06 1.982080e-06 3.964161e-06 1 1
+[120,]  1548816.6 6.19 9.645654e-06 1.936963e-06 3.873925e-06 1 1
+[121,]  1584893.2 6.20 9.630957e-06 1.892872e-06 3.785744e-06 1 1
+[122,]  1621810.1 6.21 9.616595e-06 1.849785e-06 3.699570e-06 1 1
+[123,]  1659586.9 6.22 9.602560e-06 1.807679e-06 3.615358e-06 1 1
+[124,]  1698243.7 6.23 9.588844e-06 1.766531e-06 3.533062e-06 1 1
+[125,]  1737800.8 6.24 9.575440e-06 1.726320e-06 3.452640e-06 1 1
+[126,]  1778279.4 6.25 9.562341e-06 1.687024e-06 3.374048e-06 1 1
+[127,]  1819700.9 6.26 9.549541e-06 1.648623e-06 3.297245e-06 1 1
+[128,]  1862087.1 6.27 9.537032e-06 1.611095e-06 3.222191e-06 1 1
+[129,]  1905460.7 6.28 9.524807e-06 1.574422e-06 3.148845e-06 1 1
+[130,]  1949844.6 6.29 9.512861e-06 1.538584e-06 3.077168e-06 1 1
+[131,]  1995262.3 6.30 9.501187e-06 1.503562e-06 3.007123e-06 1 1
+[132,]  2041737.9 6.31 9.489779e-06 1.469336e-06 2.938673e-06 1 1
+[133,]  2089296.1 6.32 9.478630e-06 1.435890e-06 2.871781e-06 1 1
+[134,]  2137962.1 6.33 9.467735e-06 1.403205e-06 2.806411e-06 1 1
+[135,]  2187761.6 6.34 9.457088e-06 1.371265e-06 2.742529e-06 1 1
+[136,]  2238721.1 6.35 9.446684e-06 1.340051e-06 2.680102e-06 1 1
+[137,]  2290867.7 6.36 9.436516e-06 1.309547e-06 2.619095e-06 1 1
+[138,]  2344228.8 6.37 9.426580e-06 1.279739e-06 2.559477e-06 1 1
+[139,]  2398832.9 6.38 9.416869e-06 1.250608e-06 2.501216e-06 1 1
+[140,]  2454708.9 6.39 9.407380e-06 1.222141e-06 2.444282e-06 1 1
+[141,]  2511886.4 6.40 9.398107e-06 1.194322e-06 2.388643e-06 1 1
+[142,]  2570395.8 6.41 9.389045e-06 1.167135e-06 2.334271e-06 1 1
+[143,]  2630268.0 6.42 9.380189e-06 1.140568e-06 2.281136e-06 1 1
+[144,]  2691534.8 6.43 9.371535e-06 1.114606e-06 2.229211e-06 1 1
+[145,]  2754228.7 6.44 9.363078e-06 1.089234e-06 2.178468e-06 1 1
+[146,]  2818382.9 6.45 9.354813e-06 1.064440e-06 2.128880e-06 1 1
+[147,]  2884031.5 6.46 9.346737e-06 1.040211e-06 2.080421e-06 1 1
+[148,]  2951209.2 6.47 9.338844e-06 1.016532e-06 2.033065e-06 1 1
+[149,]  3019951.7 6.48 9.331131e-06 9.933934e-07 1.986787e-06 1 1
+[150,]  3090295.4 6.49 9.323594e-06 9.707810e-07 1.941562e-06 1 1
+[151,]  3162277.7 6.50 9.316228e-06 9.486833e-07 1.897367e-06 1 1
+[152,]  3235936.6 6.51 9.309030e-06 9.270886e-07 1.854177e-06 1 1
+[153,]  3311311.2 6.52 9.301995e-06 9.059855e-07 1.811971e-06 1 1
+[154,]  3388441.6 6.53 9.295121e-06 8.853628e-07 1.770726e-06 1 1
+[155,]  3467368.5 6.54 9.288403e-06 8.652095e-07 1.730419e-06 1 1
+[156,]  3548133.9 6.55 9.281838e-06 8.455149e-07 1.691030e-06 1 1
+[157,]  3630780.5 6.56 9.275423e-06 8.262686e-07 1.652537e-06 1 1
+[158,]  3715352.3 6.57 9.269153e-06 8.074604e-07 1.614921e-06 1 1
+[159,]  3801894.0 6.58 9.263027e-06 7.890804e-07 1.578161e-06 1 1
+[160,]  3890451.4 6.59 9.257040e-06 7.711187e-07 1.542237e-06 1 1
+[161,]  3981071.7 6.60 9.251189e-06 7.535659e-07 1.507132e-06 1 1
+[162,]  4073802.8 6.61 9.245471e-06 7.364127e-07 1.472825e-06 1 1
+[163,]  4168693.8 6.62 9.239883e-06 7.196499e-07 1.439300e-06 1 1
+[164,]  4265795.2 6.63 9.234423e-06 7.032686e-07 1.406537e-06 1 1
+[165,]  4365158.3 6.64 9.229087e-06 6.872603e-07 1.374521e-06 1 1
+[166,]  4466835.9 6.65 9.223872e-06 6.716163e-07 1.343233e-06 1 1
+[167,]  4570881.9 6.66 9.218776e-06 6.563285e-07 1.312657e-06 1 1
+[168,]  4677351.4 6.67 9.213796e-06 6.413886e-07 1.282777e-06 1 1
+[169,]  4786300.9 6.68 9.208930e-06 6.267888e-07 1.253578e-06 1 1
+[170,]  4897788.2 6.69 9.204174e-06 6.125214e-07 1.225043e-06 1 1
+[171,]  5011872.3 6.70 9.199526e-06 5.985787e-07 1.197157e-06 1 1
+[172,]  5128613.8 6.71 9.194984e-06 5.849534e-07 1.169907e-06 1 1
+[173,]  5248074.6 6.72 9.190546e-06 5.716382e-07 1.143276e-06 1 1
+[174,]  5370318.0 6.73 9.186209e-06 5.586261e-07 1.117252e-06 1 1
+[175,]  5495408.7 6.74 9.181970e-06 5.459103e-07 1.091821e-06 1 1
+[176,]  5623413.3 6.75 9.177828e-06 5.334838e-07 1.066968e-06 1 1
+[177,]  5754399.4 6.76 9.173780e-06 5.213402e-07 1.042680e-06 1 1
+[178,]  5888436.6 6.77 9.169824e-06 5.094731e-07 1.018946e-06 1 1
+[179,]  6025595.9 6.78 9.165959e-06 4.978761e-07 9.957521e-07 1 1
+[180,]  6165950.0 6.79 9.162181e-06 4.865430e-07 9.730861e-07 1 1
+[181,]  6309573.4 6.80 9.158489e-06 4.754680e-07 9.509359e-07 1 1
+[182,]  6456542.3 6.81 9.154882e-06 4.646450e-07 9.292900e-07 1 1
+[183,]  6606934.5 6.82 9.151356e-06 4.540684e-07 9.081367e-07 1 1
+[184,]  6760829.8 6.83 9.147911e-06 4.437325e-07 8.874650e-07 1 1
+[185,]  6918309.7 6.84 9.144544e-06 4.336319e-07 8.672639e-07 1 1
+[186,]  7079457.8 6.85 9.141254e-06 4.237613e-07 8.475225e-07 1 1
+[187,]  7244359.6 6.86 9.138038e-06 4.141153e-07 8.282306e-07 1 1
+[188,]  7413102.4 6.87 9.134896e-06 4.046889e-07 8.093777e-07 1 1
+[189,]  7585775.8 6.88 9.131826e-06 3.954770e-07 7.909540e-07 1 1
+[190,]  7762471.2 6.89 9.128825e-06 3.864749e-07 7.729497e-07 1 1
+[191,]  7943282.3 6.90 9.125893e-06 3.776776e-07 7.553552e-07 1 1
+[192,]  8128305.2 6.91 9.123027e-06 3.690806e-07 7.381613e-07 1 1
+[193,]  8317637.7 6.92 9.120226e-06 3.606793e-07 7.213587e-07 1 1
+[194,]  8511380.4 6.93 9.117490e-06 3.524693e-07 7.049385e-07 1 1
+[195,]  8709635.9 6.94 9.114815e-06 3.444461e-07 6.888922e-07 1 1
+[196,]  8912509.4 6.95 9.112202e-06 3.366055e-07 6.732111e-07 1 1
+[197,]  9120108.4 6.96 9.109648e-06 3.289435e-07 6.578869e-07 1 1
+[198,]  9332543.0 6.97 9.107152e-06 3.214558e-07 6.429116e-07 1 1
+[199,]  9549925.9 6.98 9.104713e-06 3.141386e-07 6.282771e-07 1 1
+[200,]  9772372.2 6.99 9.102329e-06 3.069879e-07 6.139758e-07 1 1
+[201,] 10000000.0 7.00 9.100000e-06 3.000000e-07 6.000000e-07 1 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co">#For sib, n &gt; 220k; for trio, n &gt; 560k</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a><span class="fu">unrel_vs_sib_inv</span>(.<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.9333333</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unrel_vs_trio_inv</span>(.<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.9047619</code></pre>
+</div>
+</div>
+<section id="figure-2" class="level2">
+<h2 class="anchored" data-anchor-id="figure-2">Figure 2</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="fu">here</span>(<span class="st">"docs"</span>, <span class="st">"data"</span>, <span class="st">"Family_Structure_In_Biobanks_updated_27Jul2023.txt"</span>), <span class="at">h=</span>T, <span class="at">sep=</span><span class="st">"</span><span class="sc">\t</span><span class="st">"</span>)</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Remove non-public datasets</span></span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> D[<span class="sc">!</span> (D<span class="sc">$</span>Cohort...Biobank <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"QIMR"</span>)),]</span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a><span class="co">#Rename datasets for text consistency or to shorten length</span></span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a>D[D<span class="sc">$</span>Cohort...Biobank<span class="sc">==</span><span class="st">"MOBA"</span>,<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">"MoBa"</span></span>
+<span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a>D[D<span class="sc">$</span>Cohort...Biobank<span class="sc">==</span><span class="st">"Million Veteran Program"</span>,<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">"MVP"</span></span>
+<span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a>D[D<span class="sc">$</span>Cohort...Biobank<span class="sc">==</span><span class="st">"China Kadoorie Biobank"</span>,<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">"Chinese Biobank"</span></span>
+<span id="cb69-12"><a href="#cb69-12" aria-hidden="true" tabindex="-1"></a>D[D<span class="sc">$</span>Cohort...Biobank<span class="sc">==</span><span class="st">"Generation Scotland"</span>,<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">"Gen. Scotland"</span></span>
+<span id="cb69-13"><a href="#cb69-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-14"><a href="#cb69-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-15"><a href="#cb69-15" aria-hidden="true" tabindex="-1"></a><span class="co">#Revise the FinnGen numbers</span></span>
+<span id="cb69-16"><a href="#cb69-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-17"><a href="#cb69-17" aria-hidden="true" tabindex="-1"></a><span class="co">#These numbers came from Alex</span></span>
+<span id="cb69-18"><a href="#cb69-18" aria-hidden="true" tabindex="-1"></a>D[D<span class="sc">$</span>Cohort...Biobank<span class="sc">==</span><span class="st">"FinnGen"</span>,<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">520000</span>,<span class="dv">92000</span>,<span class="dv">10000</span>,<span class="dv">100000</span>)</span>
+<span id="cb69-19"><a href="#cb69-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-20"><a href="#cb69-20" aria-hidden="true" tabindex="-1"></a><span class="co">#These numbers came from Verma et al., 2023: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10327290/</span></span>
+<span id="cb69-21"><a href="#cb69-21" aria-hidden="true" tabindex="-1"></a>D[D<span class="sc">$</span>Cohort...Biobank<span class="sc">==</span><span class="st">"MVP"</span>,<span class="dv">2</span>]<span class="ot">&lt;-</span> <span class="dv">636000</span></span>
+<span id="cb69-22"><a href="#cb69-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-23"><a href="#cb69-23" aria-hidden="true" tabindex="-1"></a><span class="co">#These numbers came from Barr et al, 2023: https://jamanetwork.com/journals/jamapsychiatry/article-abstract/2811189?casa_token=9h_z5JLuFaMAAAAA:Ukgt5KspLfvmWZM564ktQzppTaeYz9II_FFSFi8-REHOB-U75np1aMUlQ49kyINwRSo5PhkyfdS4</span></span>
+<span id="cb69-24"><a href="#cb69-24" aria-hidden="true" tabindex="-1"></a>D[D<span class="sc">$</span>Cohort...Biobank<span class="sc">==</span><span class="st">"MVP"</span>,<span class="dv">3</span>]<span class="ot">&lt;-</span> <span class="dv">6063</span></span>
+<span id="cb69-25"><a href="#cb69-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-26"><a href="#cb69-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-27"><a href="#cb69-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-28"><a href="#cb69-28" aria-hidden="true" tabindex="-1"></a>Cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"grey"</span>,<span class="st">"dodgerblue"</span>,<span class="st">"goldenrod"</span>,<span class="st">"purple"</span>)</span>
+<span id="cb69-29"><a href="#cb69-29" aria-hidden="true" tabindex="-1"></a>Cols <span class="ot">&lt;-</span> <span class="st">"dodgerblue"</span></span>
+<span id="cb69-30"><a href="#cb69-30" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span></span>
+<span id="cb69-31"><a href="#cb69-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-32"><a href="#cb69-32" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="st">"Figure_relatives_in_biobanks_revised2-mck.png"</span>,<span class="at">width=</span><span class="dv">3000</span>,<span class="at">height=</span><span class="dv">2500</span>,<span class="at">res=</span><span class="dv">300</span>)</span>
+<span id="cb69-33"><a href="#cb69-33" aria-hidden="true" tabindex="-1"></a>op <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
+<span id="cb69-34"><a href="#cb69-34" aria-hidden="true" tabindex="-1"></a><span class="do">## Total sample size</span></span>
+<span id="cb69-35"><a href="#cb69-35" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> D[<span class="fu">order</span>(D<span class="sc">$</span>Total.sample.size..genotyped.,<span class="at">decreasing =</span> T),]</span>
+<span id="cb69-36"><a href="#cb69-36" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">8</span>,<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">2</span>))</span>
+<span id="cb69-37"><a href="#cb69-37" aria-hidden="true" tabindex="-1"></a>Ax <span class="ot">&lt;-</span> <span class="fu">barplot</span>(d<span class="sc">$</span>Total.sample.size..genotyped.<span class="sc">/</span><span class="dv">1000</span>,<span class="at">border=</span><span class="dv">0</span>,</span>
+<span id="cb69-38"><a href="#cb69-38" aria-hidden="true" tabindex="-1"></a>              <span class="at">main=</span><span class="st">"Individuals"</span>,</span>
+<span id="cb69-39"><a href="#cb69-39" aria-hidden="true" tabindex="-1"></a>              <span class="at">las=</span><span class="dv">2</span>,<span class="at">names.arg =</span> d<span class="sc">$</span>Cohort...Biobank,<span class="at">width=</span><span class="dv">1</span>,<span class="at">col=</span>Cols[<span class="dv">1</span>],</span>
+<span id="cb69-40"><a href="#cb69-40" aria-hidden="true" tabindex="-1"></a>              <span class="at">ylab=</span><span class="st">"Sample size (in 1000's)"</span>,<span class="at">axes=</span><span class="cn">FALSE</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">550</span>))</span>
+<span id="cb69-41"><a href="#cb69-41" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">2</span>,<span class="at">at=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">500</span>,<span class="at">by=</span><span class="dv">100</span>),<span class="at">las=</span><span class="dv">2</span>)</span>
+<span id="cb69-42"><a href="#cb69-42" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="at">side=</span><span class="dv">3</span>,<span class="at">at=</span><span class="sc">-</span><span class="dv">1</span>,<span class="at">text=</span><span class="st">"a"</span>,<span class="at">font=</span><span class="dv">2</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">line=</span><span class="dv">1</span>)</span>
+<span id="cb69-43"><a href="#cb69-43" aria-hidden="true" tabindex="-1"></a>op <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">xpd=</span><span class="cn">TRUE</span>)</span>
+<span id="cb69-44"><a href="#cb69-44" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span>Ax,<span class="at">y=</span>d<span class="sc">$</span>Total.sample.size..genotyped.<span class="sc">/</span><span class="dv">1000</span>,<span class="at">labels =</span> <span class="fu">round</span>(d<span class="sc">$</span>Total.sample.size..genotyped.<span class="sc">/</span><span class="dv">1000</span>,<span class="dv">0</span>), <span class="at">pos =</span> <span class="dv">3</span>, <span class="at">cex =</span> <span class="dv">1</span>)</span>
+<span id="cb69-45"><a href="#cb69-45" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(op)</span>
+<span id="cb69-46"><a href="#cb69-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-47"><a href="#cb69-47" aria-hidden="true" tabindex="-1"></a><span class="do">## Siblings</span></span>
+<span id="cb69-48"><a href="#cb69-48" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">8</span>,<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">2</span>))</span>
+<span id="cb69-49"><a href="#cb69-49" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> D[<span class="fu">order</span>(D<span class="sc">$</span>X.siblings.pairs,<span class="at">decreasing =</span> T),]</span>
+<span id="cb69-50"><a href="#cb69-50" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(d[,<span class="fu">c</span>(<span class="st">"Cohort...Biobank"</span>,<span class="st">"X.siblings.pairs"</span>)])</span>
+<span id="cb69-51"><a href="#cb69-51" aria-hidden="true" tabindex="-1"></a>Ax <span class="ot">&lt;-</span> <span class="fu">barplot</span>(d<span class="sc">$</span>X.siblings.pairs<span class="sc">/</span><span class="dv">1000</span>,<span class="at">border=</span><span class="dv">0</span>,</span>
+<span id="cb69-52"><a href="#cb69-52" aria-hidden="true" tabindex="-1"></a>              <span class="at">main=</span><span class="st">"Sibling pairs"</span>,</span>
+<span id="cb69-53"><a href="#cb69-53" aria-hidden="true" tabindex="-1"></a>              <span class="at">las=</span><span class="dv">2</span>,<span class="at">names.arg =</span> d<span class="sc">$</span>Cohort...Biobank,<span class="at">width=</span><span class="dv">1</span>,<span class="at">col=</span>Cols[<span class="dv">1</span>],</span>
+<span id="cb69-54"><a href="#cb69-54" aria-hidden="true" tabindex="-1"></a>              <span class="at">ylab=</span><span class="st">"Sample size (in 1000's)"</span>,<span class="at">axes=</span><span class="cn">FALSE</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">550</span>))</span>
+<span id="cb69-55"><a href="#cb69-55" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">2</span>,<span class="at">at=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">500</span>,<span class="at">by=</span><span class="dv">100</span>),<span class="at">las=</span><span class="dv">2</span>)</span>
+<span id="cb69-56"><a href="#cb69-56" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="at">side=</span><span class="dv">3</span>,<span class="at">at=</span><span class="sc">-</span><span class="dv">1</span>,<span class="at">text=</span><span class="st">"b"</span>,<span class="at">font=</span><span class="dv">2</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">line=</span><span class="dv">1</span>)</span>
+<span id="cb69-57"><a href="#cb69-57" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span>Ax,<span class="at">y=</span>d<span class="sc">$</span>X.siblings.pairs<span class="sc">/</span><span class="dv">1000</span>,<span class="at">labels =</span> <span class="fu">round</span>(d<span class="sc">$</span>X.siblings.pairs<span class="sc">/</span><span class="dv">1000</span>,<span class="dv">0</span>), <span class="at">pos =</span> <span class="dv">3</span>, <span class="at">cex =</span> <span class="dv">1</span>)</span>
+<span id="cb69-58"><a href="#cb69-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-59"><a href="#cb69-59" aria-hidden="true" tabindex="-1"></a><span class="do">## Parent-offspring pairs</span></span>
+<span id="cb69-60"><a href="#cb69-60" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">8</span>,<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">2</span>))</span>
+<span id="cb69-61"><a href="#cb69-61" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> D[<span class="fu">order</span>(D<span class="sc">$</span>X.duos,<span class="at">decreasing =</span> T),]</span>
+<span id="cb69-62"><a href="#cb69-62" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(d[,<span class="fu">c</span>(<span class="st">"Cohort...Biobank"</span>,<span class="st">"X.duos"</span>)])</span>
+<span id="cb69-63"><a href="#cb69-63" aria-hidden="true" tabindex="-1"></a>Ax <span class="ot">&lt;-</span> <span class="fu">barplot</span>(d<span class="sc">$</span>X.duos<span class="sc">/</span><span class="dv">1000</span>,<span class="at">border=</span><span class="dv">0</span>,</span>
+<span id="cb69-64"><a href="#cb69-64" aria-hidden="true" tabindex="-1"></a>              <span class="at">main=</span><span class="st">"Parent-Offspring pairs"</span>,</span>
+<span id="cb69-65"><a href="#cb69-65" aria-hidden="true" tabindex="-1"></a>              <span class="at">las=</span><span class="dv">2</span>,<span class="at">names.arg =</span> d<span class="sc">$</span>Cohort...Biobank,<span class="at">width=</span><span class="dv">1</span>,<span class="at">col=</span>Cols[<span class="dv">1</span>],</span>
+<span id="cb69-66"><a href="#cb69-66" aria-hidden="true" tabindex="-1"></a>              <span class="at">ylab=</span><span class="st">"Sample size (in 1000's)"</span>,<span class="at">axes=</span><span class="cn">FALSE</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">550</span>))</span>
+<span id="cb69-67"><a href="#cb69-67" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">2</span>,<span class="at">at=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">500</span>,<span class="at">by=</span><span class="dv">100</span>),<span class="at">las=</span><span class="dv">2</span>)</span>
+<span id="cb69-68"><a href="#cb69-68" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="at">side=</span><span class="dv">3</span>,<span class="at">at=</span><span class="sc">-</span><span class="dv">1</span>,<span class="at">text=</span><span class="st">"c"</span>,<span class="at">font=</span><span class="dv">2</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">line=</span><span class="dv">1</span>)</span>
+<span id="cb69-69"><a href="#cb69-69" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span>Ax,<span class="at">y=</span>d<span class="sc">$</span>X.duos<span class="sc">/</span><span class="dv">1000</span>,<span class="at">labels =</span> <span class="fu">round</span>(d<span class="sc">$</span>X.duos<span class="sc">/</span><span class="dv">1000</span>,<span class="dv">0</span>), <span class="at">pos =</span> <span class="dv">3</span>, <span class="at">cex =</span> <span class="dv">1</span>)</span>
+<span id="cb69-70"><a href="#cb69-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-71"><a href="#cb69-71" aria-hidden="true" tabindex="-1"></a><span class="do">## Trios</span></span>
+<span id="cb69-72"><a href="#cb69-72" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">8</span>,<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">2</span>))</span>
+<span id="cb69-73"><a href="#cb69-73" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> D[<span class="fu">order</span>(D<span class="sc">$</span>X.trios,<span class="at">decreasing =</span> T),]</span>
+<span id="cb69-74"><a href="#cb69-74" aria-hidden="true" tabindex="-1"></a><span class="co">#d &lt;- na.omit(d[,c("Cohort...Biobank","X.trios")])</span></span>
+<span id="cb69-75"><a href="#cb69-75" aria-hidden="true" tabindex="-1"></a>datasets <span class="ot">&lt;-</span> <span class="fu">c</span>(d<span class="sc">$</span>Cohort...Biobank[<span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>],<span class="fu">rep</span>(<span class="st">" "</span>,<span class="dv">6</span>))</span>
+<span id="cb69-76"><a href="#cb69-76" aria-hidden="true" tabindex="-1"></a>Ax <span class="ot">&lt;-</span> <span class="fu">barplot</span>(d<span class="sc">$</span>X.trios<span class="sc">/</span><span class="dv">1000</span>,<span class="at">border=</span><span class="dv">0</span>,</span>
+<span id="cb69-77"><a href="#cb69-77" aria-hidden="true" tabindex="-1"></a>              <span class="at">main=</span><span class="st">"Trios"</span>,</span>
+<span id="cb69-78"><a href="#cb69-78" aria-hidden="true" tabindex="-1"></a>              <span class="at">las=</span><span class="dv">2</span>,<span class="at">names.arg =</span> datasets,<span class="at">width=</span><span class="dv">1</span>,<span class="at">col=</span>Cols[<span class="dv">1</span>],</span>
+<span id="cb69-79"><a href="#cb69-79" aria-hidden="true" tabindex="-1"></a>              <span class="at">ylab=</span><span class="st">"Sample size (in 1000's)"</span>,<span class="at">axes=</span><span class="cn">FALSE</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">550</span>))</span>
+<span id="cb69-80"><a href="#cb69-80" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">2</span>,<span class="at">at=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">500</span>,<span class="at">by=</span><span class="dv">100</span>),<span class="at">las=</span><span class="dv">2</span>)</span>
+<span id="cb69-81"><a href="#cb69-81" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="at">side=</span><span class="dv">3</span>,<span class="at">at=</span><span class="sc">-</span><span class="dv">1</span>,<span class="at">text=</span><span class="st">"d"</span>,<span class="at">font=</span><span class="dv">2</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">line=</span><span class="dv">1</span>)</span>
+<span id="cb69-82"><a href="#cb69-82" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span>Ax,<span class="at">y=</span>d<span class="sc">$</span>X.trios<span class="sc">/</span><span class="dv">1000</span> <span class="sc">-</span> <span class="dv">5</span>,<span class="at">labels =</span> <span class="fu">round</span>(d<span class="sc">$</span>X.trios<span class="sc">/</span><span class="dv">1000</span>,<span class="dv">0</span>), <span class="at">pos =</span> <span class="dv">3</span>, <span class="at">cex =</span> <span class="dv">1</span>)</span>
+<span id="cb69-83"><a href="#cb69-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-84"><a href="#cb69-84" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(op)</span>
+<span id="cb69-85"><a href="#cb69-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-86"><a href="#cb69-86" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co">#text(1,100,"Tiko",srt=45)</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a><span class="co"># barplot(d$X.siblings.pairs/1000,border=0,col=Cols[1],add=T,axes=FALSE)</span></span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a><span class="co"># barplot(d$X.duos/1000,border=0,col=Cols[2],add=T,axes=FALSE,beside = T)</span></span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a><span class="co"># barplot(c(1:3), width = c(0.1,0.2,0.3))</span></span>
+<span id="cb71-8"><a href="#cb71-8" aria-hidden="true" tabindex="-1"></a><span class="co"># barplot(1:3,add=T,col=2)</span></span>
+<span id="cb71-9"><a href="#cb71-9" aria-hidden="true" tabindex="-1"></a><span class="co"># axis(1)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Look at height GWAS results</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">"/Users/matthewkeller/GoogleCloud/DriveDownloads/Meta-analysis_Wood_et_al+UKBiobank_2018_top_3290_from_COJO_analysis.txt"</span>,<span class="at">header=</span>T)</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>x<span class="sc">$</span>frq <span class="ot">&lt;-</span> x<span class="sc">$</span>Freq_Tested_Allele_in_HRS</span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>se.beta <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="dv">1</span><span class="sc">/</span>(x<span class="sc">$</span>N<span class="sc">*</span>(<span class="dv">2</span><span class="sc">*</span>x<span class="sc">$</span>frq<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>x<span class="sc">$</span>frq))))</span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(se.beta,x<span class="sc">$</span>SE)</span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a=</span><span class="dv">0</span>,<span class="at">b=</span><span class="dv">1</span>,<span class="at">col=</span><span class="st">'red'</span>)</span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(x<span class="sc">$</span>SE<span class="sc">~</span>se.beta))</span>
+<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">abs</span>(x<span class="sc">$</span>BETA))</span>
+<span id="cb72-8"><a href="#cb72-8" aria-hidden="true" tabindex="-1"></a><span class="co">#So the BETA and SE(BETA) is for standardize height ~ unstandardized genotype</span></span>
+<span id="cb72-9"><a href="#cb72-9" aria-hidden="true" tabindex="-1"></a><span class="co">#the small difference is because V(Y) is probably slightly smaller than 1 due to controlling for sex, age, PCs, etc.</span></span>
+<span id="cb72-10"><a href="#cb72-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-11"><a href="#cb72-11" aria-hidden="true" tabindex="-1"></a>x<span class="sc">$</span>bs <span class="ot">&lt;-</span> x<span class="sc">$</span>BETA<span class="sc">*</span><span class="fu">sqrt</span>(<span class="dv">2</span><span class="sc">*</span>x<span class="sc">$</span>frq<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>x<span class="sc">$</span>frq))</span>
+<span id="cb72-12"><a href="#cb72-12" aria-hidden="true" tabindex="-1"></a>x<span class="sc">$</span>bs.se <span class="ot">&lt;-</span> x<span class="sc">$</span>SE<span class="sc">*</span><span class="fu">sqrt</span>(<span class="dv">2</span><span class="sc">*</span>x<span class="sc">$</span>frq<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>x<span class="sc">$</span>frq))</span>
+<span id="cb72-13"><a href="#cb72-13" aria-hidden="true" tabindex="-1"></a>x<span class="sc">$</span>bs.var <span class="ot">&lt;-</span> x<span class="sc">$</span>bs.se<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb72-14"><a href="#cb72-14" aria-hidden="true" tabindex="-1"></a>x<span class="sc">$</span>bs.var.hat <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>x<span class="sc">$</span>N</span>
+<span id="cb72-15"><a href="#cb72-15" aria-hidden="true" tabindex="-1"></a>x<span class="sc">$</span>bs.se.hat <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(x<span class="sc">$</span>bs.var.hat)</span>
+<span id="cb72-16"><a href="#cb72-16" aria-hidden="true" tabindex="-1"></a>x.sig <span class="ot">&lt;-</span> x[x<span class="sc">$</span>P <span class="sc">&lt;</span> <span class="fl">5e-8</span>,]</span>
+<span id="cb72-17"><a href="#cb72-17" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">abs</span>(x.sig<span class="sc">$</span>bs))</span>
+<span id="cb72-18"><a href="#cb72-18" aria-hidden="true" tabindex="-1"></a><span class="co">#so mean standardized beta for significant SNPs for height is ~ .0106, or almost .01</span></span>
+<span id="cb72-19"><a href="#cb72-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-20"><a href="#cb72-20" aria-hidden="true" tabindex="-1"></a><span class="co">#The SE is off a bit, but it's pretty close at ~ .001 (obs) vs. .0012 (predicted)</span></span>
+<span id="cb72-21"><a href="#cb72-21" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x.sig<span class="sc">$</span>bs.se,x.sig<span class="sc">$</span>bs.se.hat)</span>
+<span id="cb72-22"><a href="#cb72-22" aria-hidden="true" tabindex="-1"></a>x.sig2 <span class="ot">&lt;-</span> x.sig[x.sig<span class="sc">$</span>bs.se <span class="sc">&lt;</span> .<span class="dv">0015</span>,]</span>
+<span id="cb72-23"><a href="#cb72-23" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x.sig2<span class="sc">$</span>bs.se,x.sig2<span class="sc">$</span>bs.se.hat)</span>
+<span id="cb72-24"><a href="#cb72-24" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a=</span><span class="dv">0</span>,<span class="at">b=</span><span class="dv">1</span>,<span class="at">col=</span><span class="st">'red'</span>)</span>
+<span id="cb72-25"><a href="#cb72-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-26"><a href="#cb72-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-27"><a href="#cb72-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-28"><a href="#cb72-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-29"><a href="#cb72-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-30"><a href="#cb72-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-31"><a href="#cb72-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-32"><a href="#cb72-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-33"><a href="#cb72-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-34"><a href="#cb72-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-35"><a href="#cb72-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-36"><a href="#cb72-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-37"><a href="#cb72-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-38"><a href="#cb72-38" aria-hidden="true" tabindex="-1"></a><span class="co">#OLD STUFF DOWN HERE</span></span>
+<span id="cb72-39"><a href="#cb72-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-40"><a href="#cb72-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-41"><a href="#cb72-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-42"><a href="#cb72-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-43"><a href="#cb72-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-44"><a href="#cb72-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-45"><a href="#cb72-45" aria-hidden="true" tabindex="-1"></a><span class="co">#Additional MSE plot - Figure 4B - mck</span></span>
+<span id="cb72-46"><a href="#cb72-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-47"><a href="#cb72-47" aria-hidden="true" tabindex="-1"></a><span class="co">#WE don't use this one</span></span>
+<span id="cb72-48"><a href="#cb72-48" aria-hidden="true" tabindex="-1"></a><span class="co">#wildcards</span></span>
+<span id="cb72-49"><a href="#cb72-49" aria-hidden="true" tabindex="-1"></a>h2 <span class="ot">&lt;-</span> .<span class="dv">5</span></span>
+<span id="cb72-50"><a href="#cb72-50" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> .<span class="dv">5</span> <span class="co">#SNP MAF</span></span>
+<span id="cb72-51"><a href="#cb72-51" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">10</span><span class="sc">^</span><span class="fu">c</span>(<span class="fu">seq</span>(<span class="dv">5</span>,<span class="dv">7</span>,.<span class="dv">1</span>))</span>
+<span id="cb72-52"><a href="#cb72-52" aria-hidden="true" tabindex="-1"></a>bias2 <span class="ot">&lt;-</span> <span class="fl">1e-5</span></span>
+<span id="cb72-53"><a href="#cb72-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-54"><a href="#cb72-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-55"><a href="#cb72-55" aria-hidden="true" tabindex="-1"></a><span class="co">#calculated</span></span>
+<span id="cb72-56"><a href="#cb72-56" aria-hidden="true" tabindex="-1"></a>(var.beta.pop <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>p<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>p)<span class="sc">*</span>n))</span>
+<span id="cb72-57"><a href="#cb72-57" aria-hidden="true" tabindex="-1"></a>(var.beta.direct <span class="ot">&lt;-</span> var.beta.pop<span class="sc">/</span><span class="fu">unrel_vs_direct_sibdiff</span>(h2))</span>
+<span id="cb72-58"><a href="#cb72-58" aria-hidden="true" tabindex="-1"></a>(var.beta.trio <span class="ot">&lt;-</span> var.beta.pop<span class="sc">/</span><span class="fu">unrel_vs_direct_trio</span>(h2))</span>
+<span id="cb72-59"><a href="#cb72-59" aria-hidden="true" tabindex="-1"></a>(mse.pop <span class="ot">&lt;-</span> bias2 <span class="sc">+</span> var.beta.pop)</span>
+<span id="cb72-60"><a href="#cb72-60" aria-hidden="true" tabindex="-1"></a>(mse.dir <span class="ot">&lt;-</span> var.beta.direct)</span>
+<span id="cb72-61"><a href="#cb72-61" aria-hidden="true" tabindex="-1"></a>(mse.trio <span class="ot">&lt;-</span> var.beta.trio)</span>
+<span id="cb72-62"><a href="#cb72-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-63"><a href="#cb72-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-64"><a href="#cb72-64" aria-hidden="true" tabindex="-1"></a><span class="co">#PLOT</span></span>
+<span id="cb72-65"><a href="#cb72-65" aria-hidden="true" tabindex="-1"></a><span class="co">#quartz()</span></span>
+<span id="cb72-66"><a href="#cb72-66" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">log</span>(n,<span class="dv">10</span>),mse.dir,<span class="at">type=</span><span class="st">'l'</span>,<span class="at">col=</span><span class="st">'red'</span>,<span class="at">ylab=</span><span class="st">"MSE of GWAS Estimate (Inaccuracy)"</span>,<span class="at">xlab=</span><span class="st">"log10(n individuals)"</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb72-67"><a href="#cb72-67" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">log</span>(n,<span class="dv">10</span>),mse.pop,<span class="at">type=</span><span class="st">'l'</span>,<span class="at">col=</span><span class="st">'black'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">lty=</span><span class="dv">2</span>)</span>
+<span id="cb72-68"><a href="#cb72-68" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">log</span>(n,<span class="dv">10</span>),mse.trio,<span class="at">type=</span><span class="st">'l'</span>,<span class="at">col=</span><span class="st">'blue'</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb72-69"><a href="#cb72-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-70"><a href="#cb72-70" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span>bias2,<span class="at">lty=</span><span class="dv">3</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'orange'</span>)</span>
+<span id="cb72-71"><a href="#cb72-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-72"><a href="#cb72-72" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="fl">4.7</span>,<span class="fl">4.5e-4</span>,<span class="at">legend=</span><span class="fu">expression</span>(<span class="st">"n/2 sibling pairs (direct)"</span>,<span class="st">"n/3 trios (direct)"</span>,<span class="st">"n unrelateds (population)"</span>,<span class="st">"hypothetical"</span> <span class="sc">~</span> bias<span class="sc">^</span><span class="dv">2</span> <span class="sc">~</span><span class="st">""</span>),<span class="at">lty=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>),<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"blue"</span>,<span class="st">"black"</span>,<span class="st">"orange"</span>),<span class="at">bty=</span><span class="st">"n"</span>,<span class="at">cex=</span><span class="fl">1.1</span>)</span>
+<span id="cb72-73"><a href="#cb72-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-74"><a href="#cb72-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-75"><a href="#cb72-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-76"><a href="#cb72-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-77"><a href="#cb72-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-78"><a href="#cb72-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-79"><a href="#cb72-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-80"><a href="#cb72-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-81"><a href="#cb72-81" aria-hidden="true" tabindex="-1"></a>bh <span class="ot">&lt;-</span> .<span class="dv">3</span></span>
+<span id="cb72-82"><a href="#cb72-82" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> .<span class="dv">1</span></span>
+<span id="cb72-83"><a href="#cb72-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-84"><a href="#cb72-84" aria-hidden="true" tabindex="-1"></a>bh<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> b<span class="sc">^</span><span class="dv">2</span> <span class="sc">-</span> <span class="dv">2</span><span class="sc">*</span>b<span class="sc">*</span>bh</span>
+<span id="cb72-85"><a href="#cb72-85" aria-hidden="true" tabindex="-1"></a>(bh<span class="sc">-</span>b)<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb72-86"><a href="#cb72-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-87"><a href="#cb72-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-88"><a href="#cb72-88" aria-hidden="true" tabindex="-1"></a>bh <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="fl">1e4</span>,.<span class="dv">3</span>,.<span class="dv">5</span>)</span>
+<span id="cb72-89"><a href="#cb72-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-90"><a href="#cb72-90" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(bh<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> b<span class="sc">^</span><span class="dv">2</span> <span class="sc">-</span> <span class="dv">2</span><span class="sc">*</span>b<span class="sc">*</span>bh)</span>
+<span id="cb72-91"><a href="#cb72-91" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>((bh<span class="sc">-</span>b)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb72-92"><a href="#cb72-92" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(bh<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">mean</span>(b<span class="sc">^</span><span class="dv">2</span>) <span class="sc">-</span> <span class="dv">2</span><span class="sc">*</span><span class="fu">mean</span>(b<span class="sc">*</span>bh)</span>
+<span id="cb72-93"><a href="#cb72-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-94"><a href="#cb72-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-95"><a href="#cb72-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-96"><a href="#cb72-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-97"><a href="#cb72-97" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">c</span>(.<span class="dv">2</span>,.<span class="dv">5</span>,.<span class="dv">8</span>)</span>
+<span id="cb72-98"><a href="#cb72-98" aria-hidden="true" tabindex="-1"></a>(h<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">2</span>)<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb72-99"><a href="#cb72-99" aria-hidden="true" tabindex="-1"></a>h<span class="sc">^</span><span class="dv">4</span><span class="sc">/</span><span class="dv">4</span></span>
+<span id="cb72-100"><a href="#cb72-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-101"><a href="#cb72-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-102"><a href="#cb72-102" aria-hidden="true" tabindex="-1"></a>(<span class="dv">2</span><span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>(h<span class="sc">^</span><span class="dv">4</span>)<span class="sc">/</span><span class="dv">2</span>))<span class="sc">/</span>(<span class="dv">2</span><span class="sc">-</span>(h<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb72-103"><a href="#cb72-103" aria-hidden="true" tabindex="-1"></a><span class="fu">unrel_vs_sib</span>(h)</span>
+<span id="cb72-104"><a href="#cb72-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-105"><a href="#cb72-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-106"><a href="#cb72-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-107"><a href="#cb72-107" aria-hidden="true" tabindex="-1"></a>num <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>(h<span class="sc">^</span><span class="dv">4</span><span class="sc">/</span><span class="dv">4</span>))</span>
+<span id="cb72-108"><a href="#cb72-108" aria-hidden="true" tabindex="-1"></a>den <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">-</span>h<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb72-109"><a href="#cb72-109" aria-hidden="true" tabindex="-1"></a>num<span class="sc">/</span>den</span>
+<span id="cb72-110"><a href="#cb72-110" aria-hidden="true" tabindex="-1"></a><span class="fu">unrel_vs_sib</span>(h)</span>
+<span id="cb72-111"><a href="#cb72-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-112"><a href="#cb72-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-113"><a href="#cb72-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-114"><a href="#cb72-114" aria-hidden="true" tabindex="-1"></a><span class="co">#this is what he is saying re sib</span></span>
+<span id="cb72-115"><a href="#cb72-115" aria-hidden="true" tabindex="-1"></a>h2 <span class="ot">&lt;-</span> <span class="fu">c</span>(.<span class="dv">2</span>,.<span class="dv">5</span>,.<span class="dv">8</span>)</span>
+<span id="cb72-116"><a href="#cb72-116" aria-hidden="true" tabindex="-1"></a>num <span class="ot">&lt;-</span> <span class="dv">4</span> <span class="sc">-</span> h2<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb72-117"><a href="#cb72-117" aria-hidden="true" tabindex="-1"></a>den <span class="ot">&lt;-</span> <span class="dv">4</span> <span class="sc">-</span> h2</span>
+<span id="cb72-118"><a href="#cb72-118" aria-hidden="true" tabindex="-1"></a>den<span class="sc">/</span>num</span>
+<span id="cb72-119"><a href="#cb72-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-120"><a href="#cb72-120" aria-hidden="true" tabindex="-1"></a><span class="fu">unrel_vs_sib_inv</span>(h2)</span>
+<span id="cb72-121"><a href="#cb72-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-122"><a href="#cb72-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-123"><a href="#cb72-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-124"><a href="#cb72-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-125"><a href="#cb72-125" aria-hidden="true" tabindex="-1"></a><span class="co">#this is what he is saying re trio</span></span>
+<span id="cb72-126"><a href="#cb72-126" aria-hidden="true" tabindex="-1"></a>h2 <span class="ot">&lt;-</span> <span class="fu">c</span>(.<span class="dv">2</span>,.<span class="dv">5</span>,.<span class="dv">8</span>)</span>
+<span id="cb72-127"><a href="#cb72-127" aria-hidden="true" tabindex="-1"></a>num <span class="ot">&lt;-</span> <span class="dv">3</span><span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>h2<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb72-128"><a href="#cb72-128" aria-hidden="true" tabindex="-1"></a>den <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="sc">-</span> h2<span class="sc">*</span>(<span class="dv">1</span><span class="sc">+</span>h2<span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb72-129"><a href="#cb72-129" aria-hidden="true" tabindex="-1"></a>num<span class="sc">/</span>den</span>
+<span id="cb72-130"><a href="#cb72-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-131"><a href="#cb72-131" aria-hidden="true" tabindex="-1"></a>den<span class="sc">/</span>num</span>
+<span id="cb72-132"><a href="#cb72-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-133"><a href="#cb72-133" aria-hidden="true" tabindex="-1"></a><span class="fu">unrel_vs_trio_inv</span>(h2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

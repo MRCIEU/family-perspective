@@ -1,0 +1,15 @@
+Cohort / Biobank	Total sample size (genotyped)	#siblings pairs	#trios	#duos	#spouse pairs	Source
+UK Biobank	488410	22000	1000	6000	50000	https://www.nature.com/articles/s41586-018-0579-z
+HUNT	88721	44777		68124		https://pubmed.ncbi.nlm.nih.gov/36777998/ (Table S3)
+Generation Scotland	20000	8000		10000		Personal Communication
+Lifelines	50000	17000		17000		Personal Communication
+QIMR	20000	13000				Personal Communication
+Estonian Biobank	200000	13000	10000	66000		Personal Communication
+MOBA	200000	23000	44000	117000		https://www.biorxiv.org/content/10.1101/2022.06.23.496289v3.full.pdf
+DeCODE	155000	108000	55000	110000		"https://www.nature.com/articles/s41588-018-0178-9, https://pubmed.ncbi.nlm.nih.gov/30679340/"
+Million Veteran Program	460000	5000		3000		https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7118558/ (Table S8)
+DiscovEHR	93000	10000	2000	16000		https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5986700/
+FinnGen	224000	28391	6707	28761		https://www.nature.com/articles/s41586-022-05473-8#Sec28 (Table S5)
+China Kadoorie Biobank	100000	6000	1000	6000		https://www.medrxiv.org/content/10.1101/2022.05.02.22274487v1.full.pdf
+Taiwan Biobank	100000	5000		4000		https://www.sciencedirect.com/science/article/pii/S2666979X2200146X?via%3Dihub
+Biobank Japan	150000	7000		7000		https://academic.oup.com/bioinformatics/article/36/24/5567/5949019?login=true

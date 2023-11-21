@@ -1,0 +1,543 @@
+---
+title: Main figures for future of biobanks paper
+author: Matt Keller
+---
+
+```{r}
+library(ggplot2)
+library(MASS)
+library(here)
+######### Simulation functions ############
+
+# simulate_phenotype = function(h2,nfam){
+#   sigma = rbind(c(1,h2/2,h2/2,h2/2),
+#                 c(h2/2,1,h2/2,h2/2),
+#                 c(h2/2,h2/2,1,0),
+#                 c(h2/2,h2/2,0,1))
+#   y = mvrnorm(n=nfam,mu=rep(0,4),Sigma=sigma)
+#   dimnames(y)[[2]] = c('sib1','sib2','father','mother')
+#   return(y)
+# }
+
+simulate_parents = function(f,nfam){
+  father = matrix(rbinom(nfam*2,1,f),nrow=nfam,ncol=2)
+  mother = matrix(rbinom(nfam*2,1,f),nrow=nfam,ncol=2)
+  return(list(father=father,mother=mother))
+}
+
+simulate_meiosis = function(parents){
+  nfam = dim(parents$father)[1]
+  sibs = matrix(NA,nrow=nfam,ncol=2)
+  for (i in 1:2){
+    # Paternal allele
+    pat_seg = rbinom(nfam,1,0.5)
+    sibs[pat_seg==0,i] = parents$father[pat_seg==0,1]
+    sibs[pat_seg==1,i] = parents$father[pat_seg==1,2]
+    # Maternal allele
+    mat_seg = rbinom(nfam,1,0.5)
+    sibs[mat_seg==0,i] = sibs[mat_seg==0,i]+parents$mother[mat_seg==0,1]
+    sibs[mat_seg==1,i] = sibs[mat_seg==1,i]+parents$mother[mat_seg==1,2]
+  }
+  return(sibs)
+}
+
+simulate_genotype = function(f,nfam){
+  parents = simulate_parents(f,nfam)
+  sibs = simulate_meiosis(parents)
+  quad = matrix(NA,nrow=nfam,ncol=4)
+  dimnames(quad)[[2]] = c('sib1','sib2','father','mother')
+  quad[,1:2] = sibs
+  quad[,3] = apply(parents$father,1,sum)
+  quad[,4] = apply(parents$mother,1,sum)
+  quad = quad-2*f
+  return(quad)
+}
+
+unrelated_regression = function(g){
+  return(1/sum(g[,1]^2))
+}
+
+sib_regression = function(g,h2){
+  nfam = dim(g)[1]
+  sigma = rbind(c(1,h2/2),c(h2/2,1))
+  sigma_inv = solve(sigma)
+  xtx = 0 
+  for (i in 1:nfam){
+    xtx = xtx+t(g[i,1:2])%*%sigma_inv%*%g[i,1:2]
+  }
+  return(xtx^(-1))
+}
+
+trio_regression = function(g,h2){
+  nfam = dim(g)[1]
+  sigma = rbind(c(1,h2/2,h2/2),c(h2/2,1,0),
+                c(h2/2,0,1))
+  sigma_inv = solve(sigma)
+  xtx = 0 
+  for (i in 1:nfam){
+    xtx = xtx+t(g[i,c(1,3,4)])%*%sigma_inv%*%g[i,c(1,3,4)]
+  }
+  return(xtx^(-1))
+}
+
+##### Effective sample size functions 
+
+unrel_vs_sib = function(h2){
+  return(1+h2*(1-h2)/(4-h2))
+}
+
+unrel_vs_sib_inv = function(h2){
+  return((1+h2*(1-h2)/(4-h2))^(-1))
+}
+
+unrel_vs_trio = function(h2){
+  return(1+h2*(1-h2)/(3-h2*(1+h2/2)))
+}
+
+unrel_vs_trio_inv = function(h2){
+  return((1+h2*(1-h2)/(3-h2*(1+h2/2)))^(-1))
+}
+
+unrel_vs_direct_trio = function(h2){return(0.5/3)}
+
+unrel_vs_direct_sibdiff = function(h2){return((2*(2-h2))^(-1))}
+
+unrel_vs_direct_sibimp = function(h2){return((2+h2/2)/(6*(1-(h2/2)^2)))}
+```
+
+Simulation
+
+```{r}
+h2 = 0.5
+f = 0.5 #MAF
+nfam = 600000
+nsib = nfam/2
+ntrio = nfam/3
+
+# Simulate genotypes
+g = simulate_genotype(f,nfam)
+
+## Estimate effects
+
+# Unrelated
+unrelated_var = unrelated_regression(g)
+
+# Sibs
+sib_var = sib_regression(g[1:nsib,],h2)
+empirical_unrel_vs_sib = sib_var/unrelated_var
+print('Predicted relative effective sample of unrelated vs sib for population effects')
+predicted_unrel_vs_sib = unrel_vs_sib(h2)
+print(predicted_unrel_vs_sib)
+```
+
+```{r}
+print('Empirical relative effective sample of unrelated vs sib for population effects')
+print(empirical_unrel_vs_sib)
+```
+
+Trios
+
+```{r}
+trio_var = trio_regression(g[1:ntrio,],h2)
+empirical_unrel_vs_trio = trio_var/unrelated_var
+predicted_unrel_vs_trio = unrel_vs_trio(h2)
+print('Predicted relative effective sample of unrelated vs trios for population effects')
+print(predicted_unrel_vs_trio)
+```
+
+```{r}
+print('Empirical relative effective sample of unrelated vs sib for population effects')
+print(empirical_unrel_vs_trio)
+```
+
+
+Plot
+
+```{r}
+base <-
+  ggplot() +
+  xlim(0,1)+ylim(0,1)
+
+ess_plot = base + geom_function(fun = unrel_vs_trio_inv, color = "#0072B2",size=1.5)+
+  geom_function(fun=unrel_vs_sib_inv,color="#D55E00",size=1.5)+
+  geom_function(fun=unrel_vs_direct_trio,color="#0072B2",linetype = "longdash",size=1.5)+
+  geom_function(fun=unrel_vs_direct_sibdiff,color="#D55E00",linetype = "longdash",size=1.5)+
+  geom_function(fun=unrel_vs_direct_sibimp,color="#D55E00",linetype='twodash',size=1.5)+
+  xlab('Heritability')+ylab('Relative effective sample size')+
+  theme_minimal() + theme(axis.line = element_line(color="black"),
+                          axis.ticks = element_line(color="black"),
+                          panel.border = element_blank(),
+                          axis.text.x = element_text(angle = 45, hjust=1))
+
+ess_plot
+```
+
+```{r}
+ggsave(ess_plot, file='ESS_plot.pdf',width=4,height=5)
+#ggsave('ESS_plot.png',width=4,height=5)
+```
+
+
+
+
+
+THIS IS FIG 4A IN THE PAPER
+
+```{r}
+ess_plot2 = base + geom_function(fun = unrel_vs_trio_inv, color = "blue",size=1.5,linetype = "longdash")+
+  geom_function(fun=unrel_vs_sib_inv,color="red",size=1.5,linetype = "longdash")+
+  geom_function(fun=unrel_vs_direct_trio,color="blue",size=1.5)+
+  geom_function(fun=unrel_vs_direct_sibdiff,color="red",size=1.5)+
+  xlab('')+ylab('')+
+  theme_classic() + theme(axis.line = element_line(color="black"),
+                          axis.ticks = element_line(color="black"),
+                          panel.border = element_blank(),
+                          axis.text.x = element_text(angle = 45, hjust=1))
+
+
+ess_plot2
+```
+
+```{r}
+ggsave(ess_plot2, file='ESS_plot.pdf',width=4,height=4)
+```
+
+```{r}
+plot(1:10,1:10,type="n")
+legend(3,5,legend=rep("",4),lty=c(2,2,1,1),lwd=3,col=c("red","blue","red","blue"),bty="n",cex=1.1)
+legend(3,5,legend=c("n/2 sibling pairs (population)","n/3 trios (population)","n/2 sibling pairs (direct)","n/3 trios (direct)"),lty=c(2,2,1,1),lwd=2,col=c("red","blue","red","blue"),bty="n",cex=1.1)
+
+
+
+base <-
+  ggplot() +
+  xlim(0,1.5)+ylim(0,1.5)
+
+ess_plot = base + 
+  geom_function(fun=unrel_vs_sib_inv,color="#D55E00",size=1.5)+
+  geom_function(fun=unrel_vs_direct_sibdiff,color="#D55E00",linetype = "longdash",size=1.5)+
+  geom_function(fun=unrel_vs_direct_sibimp,color="#D55E00",linetype='twodash',size=1.5)+
+  xlab('Sibling phenotype correlation')+ylab('Relative effective sample size')+
+  theme_minimal() + theme(axis.line = element_line(color="black"),
+                          axis.ticks = element_line(color="black"),
+                          panel.border = element_blank(),
+                          axis.text.x = element_text(angle = 45, hjust=1))
+
+ess_plot
+ggsave('ESS_plot_sibs.pdf',width=5,height=5)
+```
+
+THIS IS FIG 4B IN THE PAPER
+
+```{r}
+#We use this one - standardized effect
+#wildcards - try 2 with standardized betas
+h2 <- .5
+p <- .5 #SNP MAF
+n <- 10^c(seq(5,7,.1))
+(bias2 <- .003^2)
+sqrt(bias2)
+```
+
+```{r}
+#calculated
+(var.beta.pop <- 1/n)
+(var.beta.direct <- var.beta.pop/unrel_vs_direct_sibdiff(h2))
+(var.beta.trio <- var.beta.pop/unrel_vs_direct_trio(h2))
+(mse.pop <- bias2 + var.beta.pop)
+(mse.dir <- var.beta.direct)
+(mse.trio <- var.beta.trio)
+```
+
+PLOT
+```{r}
+pdf("fig4b.pdf")
+quartz()
+plot(log(n,10),mse.dir,type='l',col='red',ylab="MSE of GWAS Estimate (Inaccuracy)",xlab="log10(n individuals)",lwd=4)
+lines(log(n,10),mse.pop,type='l',col='black',lwd=4,lty=2)
+lines(log(n,10),mse.trio,type='l',col='blue',lwd=4)
+
+abline(h=bias2,lty=3,lwd=4,col='orange')
+
+
+
+# legend(5.55,3.0e-5,legend=rep("",4),lty=c(1,1,2,3),lwd=4,col=c("red","blue","black","orange"),bty="n",cex=1.5)
+
+
+legend(5.7,2.9e-5,legend=expression("n/2 sibling pairs (direct)","n/3 trios (direct)","n unrelateds (population)","hypothetical" ~ bias^2 ~""),lty=c(1,1,2,3),lwd=2,col=c("red","blue","black","orange"),bty="n",cex=1.5)
+dev.off()
+```
+
+
+Check exactly where the cross-over points are
+
+```{r}
+h2 <- .5
+p <- .5 #SNP MAF
+n <- 10^c(seq(5,7,.01))
+(bias2 <- .003^2)
+sqrt(bias2)
+
+#calculated
+(var.beta.pop <- 1/n)
+(var.beta.direct <- var.beta.pop/unrel_vs_direct_sibdiff(h2))
+(var.beta.trio <- var.beta.pop/unrel_vs_direct_trio(h2))
+(mse.pop <- bias2 + var.beta.pop)
+(mse.dir <- var.beta.direct)
+(mse.trio <- var.beta.trio)
+
+cbind(n,log(n,10),mse.pop,mse.dir,mse.trio,mse.dir<mse.pop,mse.trio<mse.pop)
+#For sib, n > 220k; for trio, n > 560k
+
+
+
+unrel_vs_sib_inv(.5)
+unrel_vs_trio_inv(.5)
+```
+
+
+## Figure 2
+
+```{r}
+D <- read.delim(here("docs", "data", "Family_Structure_In_Biobanks_updated_27Jul2023.txt"), h=T, sep="\t")
+
+
+#Remove non-public datasets
+D <- D[! (D$Cohort...Biobank %in% c("QIMR")),]
+
+
+#Rename datasets for text consistency or to shorten length
+D[D$Cohort...Biobank=="MOBA",1] <- "MoBa"
+D[D$Cohort...Biobank=="Million Veteran Program",1] <- "MVP"
+D[D$Cohort...Biobank=="China Kadoorie Biobank",1] <- "Chinese Biobank"
+D[D$Cohort...Biobank=="Generation Scotland",1] <- "Gen. Scotland"
+
+
+#Revise the FinnGen numbers
+
+#These numbers came from Alex
+D[D$Cohort...Biobank=="FinnGen",2:5] <- c(520000,92000,10000,100000)
+
+#These numbers came from Verma et al., 2023: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10327290/
+D[D$Cohort...Biobank=="MVP",2]<- 636000
+
+#These numbers came from Barr et al, 2023: https://jamanetwork.com/journals/jamapsychiatry/article-abstract/2811189?casa_token=9h_z5JLuFaMAAAAA:Ukgt5KspLfvmWZM564ktQzppTaeYz9II_FFSFi8-REHOB-U75np1aMUlQ49kyINwRSo5PhkyfdS4
+D[D$Cohort...Biobank=="MVP",3]<- 6063
+
+
+
+Cols <- c("grey","dodgerblue","goldenrod","purple")
+Cols <- "dodgerblue"
+s <- 1/3
+
+png("Figure_relatives_in_biobanks_revised2-mck.png",width=3000,height=2500,res=300)
+op <- par(mfrow=c(2,2))
+## Total sample size
+d <- D[order(D$Total.sample.size..genotyped.,decreasing = T),]
+par(mar=c(8,5,5,2))
+Ax <- barplot(d$Total.sample.size..genotyped./1000,border=0,
+              main="Individuals",
+              las=2,names.arg = d$Cohort...Biobank,width=1,col=Cols[1],
+              ylab="Sample size (in 1000's)",axes=FALSE,ylim=c(0,550))
+axis(2,at=seq(0,500,by=100),las=2)
+mtext(side=3,at=-1,text="a",font=2,cex=1.5,line=1)
+op <- par(xpd=TRUE)
+text(x=Ax,y=d$Total.sample.size..genotyped./1000,labels = round(d$Total.sample.size..genotyped./1000,0), pos = 3, cex = 1)
+par(op)
+
+## Siblings
+par(mar=c(8,5,5,2))
+d <- D[order(D$X.siblings.pairs,decreasing = T),]
+d <- na.omit(d[,c("Cohort...Biobank","X.siblings.pairs")])
+Ax <- barplot(d$X.siblings.pairs/1000,border=0,
+              main="Sibling pairs",
+              las=2,names.arg = d$Cohort...Biobank,width=1,col=Cols[1],
+              ylab="Sample size (in 1000's)",axes=FALSE,ylim=c(0,550))
+axis(2,at=seq(0,500,by=100),las=2)
+mtext(side=3,at=-1,text="b",font=2,cex=1.5,line=1)
+text(x=Ax,y=d$X.siblings.pairs/1000,labels = round(d$X.siblings.pairs/1000,0), pos = 3, cex = 1)
+
+## Parent-offspring pairs
+par(mar=c(8,5,5,2))
+d <- D[order(D$X.duos,decreasing = T),]
+d <- na.omit(d[,c("Cohort...Biobank","X.duos")])
+Ax <- barplot(d$X.duos/1000,border=0,
+              main="Parent-Offspring pairs",
+              las=2,names.arg = d$Cohort...Biobank,width=1,col=Cols[1],
+              ylab="Sample size (in 1000's)",axes=FALSE,ylim=c(0,550))
+axis(2,at=seq(0,500,by=100),las=2)
+mtext(side=3,at=-1,text="c",font=2,cex=1.5,line=1)
+text(x=Ax,y=d$X.duos/1000,labels = round(d$X.duos/1000,0), pos = 3, cex = 1)
+
+## Trios
+par(mar=c(8,5,5,2))
+d <- D[order(D$X.trios,decreasing = T),]
+#d <- na.omit(d[,c("Cohort...Biobank","X.trios")])
+datasets <- c(d$Cohort...Biobank[1:7],rep(" ",6))
+Ax <- barplot(d$X.trios/1000,border=0,
+              main="Trios",
+              las=2,names.arg = datasets,width=1,col=Cols[1],
+              ylab="Sample size (in 1000's)",axes=FALSE,ylim=c(0,550))
+axis(2,at=seq(0,500,by=100),las=2)
+mtext(side=3,at=-1,text="d",font=2,cex=1.5,line=1)
+text(x=Ax,y=d$X.trios/1000 - 5,labels = round(d$X.trios/1000,0), pos = 3, cex = 1)
+
+par(op)
+
+dev.off()
+
+#text(1,100,"Tiko",srt=45)
+
+# 
+# barplot(d$X.siblings.pairs/1000,border=0,col=Cols[1],add=T,axes=FALSE)
+# barplot(d$X.duos/1000,border=0,col=Cols[2],add=T,axes=FALSE,beside = T)
+# 
+# barplot(c(1:3), width = c(0.1,0.2,0.3))
+# barplot(1:3,add=T,col=2)
+# axis(1)
+```
+
+
+
+
+Look at height GWAS results
+
+```{r, eval=FALSE}
+x <- read.table("/Users/matthewkeller/GoogleCloud/DriveDownloads/Meta-analysis_Wood_et_al+UKBiobank_2018_top_3290_from_COJO_analysis.txt",header=T)
+x$frq <- x$Freq_Tested_Allele_in_HRS
+se.beta <- sqrt(1/(x$N*(2*x$frq*(1-x$frq))))
+plot(se.beta,x$SE)
+abline(a=0,b=1,col='red')
+summary(lm(x$SE~se.beta))
+summary(abs(x$BETA))
+#So the BETA and SE(BETA) is for standardize height ~ unstandardized genotype
+#the small difference is because V(Y) is probably slightly smaller than 1 due to controlling for sex, age, PCs, etc.
+
+x$bs <- x$BETA*sqrt(2*x$frq*(1-x$frq))
+x$bs.se <- x$SE*sqrt(2*x$frq*(1-x$frq))
+x$bs.var <- x$bs.se^2
+x$bs.var.hat <- 1/x$N
+x$bs.se.hat <- sqrt(x$bs.var.hat)
+x.sig <- x[x$P < 5e-8,]
+summary(abs(x.sig$bs))
+#so mean standardized beta for significant SNPs for height is ~ .0106, or almost .01
+
+#The SE is off a bit, but it's pretty close at ~ .001 (obs) vs. .0012 (predicted)
+plot(x.sig$bs.se,x.sig$bs.se.hat)
+x.sig2 <- x.sig[x.sig$bs.se < .0015,]
+plot(x.sig2$bs.se,x.sig2$bs.se.hat)
+abline(a=0,b=1,col='red')
+
+
+
+
+
+
+
+
+
+
+
+
+
+#OLD STUFF DOWN HERE
+
+
+
+
+
+
+#Additional MSE plot - Figure 4B - mck
+
+#WE don't use this one
+#wildcards
+h2 <- .5
+p <- .5 #SNP MAF
+n <- 10^c(seq(5,7,.1))
+bias2 <- 1e-5
+
+
+#calculated
+(var.beta.pop <- 1/(2*p*(1-p)*n))
+(var.beta.direct <- var.beta.pop/unrel_vs_direct_sibdiff(h2))
+(var.beta.trio <- var.beta.pop/unrel_vs_direct_trio(h2))
+(mse.pop <- bias2 + var.beta.pop)
+(mse.dir <- var.beta.direct)
+(mse.trio <- var.beta.trio)
+
+
+#PLOT
+#quartz()
+plot(log(n,10),mse.dir,type='l',col='red',ylab="MSE of GWAS Estimate (Inaccuracy)",xlab="log10(n individuals)",lwd=2)
+lines(log(n,10),mse.pop,type='l',col='black',lwd=2,lty=2)
+lines(log(n,10),mse.trio,type='l',col='blue',lwd=2)
+
+abline(h=bias2,lty=3,lwd=2,col='orange')
+
+legend(4.7,4.5e-4,legend=expression("n/2 sibling pairs (direct)","n/3 trios (direct)","n unrelateds (population)","hypothetical" ~ bias^2 ~""),lty=c(1,1,2,3),lwd=2,col=c("red","blue","black","orange"),bty="n",cex=1.1)
+
+
+
+
+
+
+
+
+bh <- .3
+b <- .1
+
+bh^2 + b^2 - 2*b*bh
+(bh-b)^2
+
+
+bh <- rnorm(1e4,.3,.5)
+
+mean(bh^2 + b^2 - 2*b*bh)
+mean((bh-b)^2)
+mean(bh^2) + mean(b^2) - 2*mean(b*bh)
+
+
+
+
+h <- c(.2,.5,.8)
+(h^2/2)^2
+h^4/4
+
+
+(2*(1-(h^4)/2))/(2-(h^2)/2)
+unrel_vs_sib(h)
+
+
+
+num <- 2*(1-(h^4/4))
+den <- 2-h^2/2
+num/den
+unrel_vs_sib(h)
+
+
+
+#this is what he is saying re sib
+h2 <- c(.2,.5,.8)
+num <- 4 - h2^2
+den <- 4 - h2
+den/num
+
+unrel_vs_sib_inv(h2)
+
+
+
+
+#this is what he is saying re trio
+h2 <- c(.2,.5,.8)
+num <- 3*(1-h2^2/2)
+den <- 3 - h2*(1+h2/2)
+num/den
+
+den/num
+
+unrel_vs_trio_inv(h2)
+
+
+
+
+```
