@@ -12,6 +12,7 @@ renv::restore()
 To run simply compile in RStudio or use
 
 ```r
+rmarkdown::render("docs/main_figs.rmd")
 rmarkdown::render("docs/ascertainment_relatedness.rmd")
 ```
 
